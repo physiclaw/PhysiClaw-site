@@ -1,43 +1,242 @@
-# Astro Starter Kit: Minimal
+# PhysiClaw Site
+
+The **landing page** and the **docs renderer** for [**PhysiClaw**](https://github.com/physiclaw/PhysiClaw) — a robotic arm that gives AI agents a physical body to operate any phone.
+
+| Surface | URL | Source |
+| ------- | --- | ------ |
+| Landing page | [physiclaw.ai](https://physiclaw.ai) | this repo |
+| Documentation | [docs.physiclaw.ai](https://docs.physiclaw.ai) | docs **content** in [`physiclaw/PhysiClaw`](https://github.com/physiclaw/PhysiClaw) → rendered by this repo |
+
+Built with [Astro](https://astro.build) + [Tailwind CSS](https://tailwindcss.com) for the landing page and [Starlight](https://starlight.astro.build) for the docs, deployed on [Vercel](https://vercel.com).
+
+## What this repo is
+
+This repo holds **presentation, not docs content**:
+
+1. **Landing page** (`/`) — the marketing site, deployed to `physiclaw.ai`.
+2. **Docs renderer / theme** — an Astro **Starlight** site that turns the Markdown in the PhysiClaw **code** repo into the static docs at `docs.physiclaw.ai`. The docs *content* does **not** live here.
+
+Keeping docs content in the code repo means documentation ships in the **same pull request** as the code it describes, while this repo owns all presentation (theme, layout, navigation, search, i18n). The landing page and docs are themed to a **consistent brand** — see [Brand theming](#docs-renderer-stack).
+
+## Architecture
+
+Two repos, two Vercel deployments, one consistent brand.
+
+```
+┌──────────────────────────────┐                ┌───────────────────────────────────┐
+│  physiclaw/PhysiClaw (code)   │                │  physiclaw/PhysiClaw-site (here)   │
+│                               │   trigger on   │                                    │
+│  docs/            ← source    │   docs/**      │  Landing page    (Astro+Tailwind)  │
+│   ├─ intro.mdx       (en)     │  ───────────►  │  Docs site       (Starlight)       │
+│   ├─ intro.zh.mdx    (zh)     │   dispatch     │  built-in search, sidebar, i18n    │
+│   ├─ hardware.mdx    (en)     │                │  + Vercel deploy credentials       │
+│   └─ hardware.zh.mdx (zh)     │                │                                    │
+│                               │                │  build = renderer + docs content   │
+└───────────────────────────────┘                └─────────────────┬──────────────────┘
+                                                                    │
+                                  ┌─────────────────────────────────┴─────────────────┐
+                                  ▼                                                     ▼
+                         physiclaw.ai                                       docs.physiclaw.ai
+                    (landing — Vercel project)                          (docs — Vercel project)
+```
+
+### Responsibilities
+
+| | `physiclaw/PhysiClaw` (code) | `physiclaw/PhysiClaw-site` (this repo) |
+| --- | --- | --- |
+| Owns | docs **content** (Markdown, bilingual) | landing page + docs **renderer/theme** |
+| Holds secret | low-privilege **dispatch token** only | the **`VERCEL_TOKEN`** (build + deploy) |
+| Deploys | nothing directly — only *triggers* | both Vercel projects |
+
+This split follows OpenClaw's docs setup: the powerful deploy credential stays **out** of the large, many-contributor code repo, which carries only a narrow token that can do one thing — trigger a docs build.
+
+## How docs publish
+
+- **Edit the landing page** (here) → Vercel's native git integration redeploys `physiclaw.ai`.
+- **Edit docs** (`docs/**` in the code repo) → a GitHub Action there fires a `repository_dispatch` at this repo. This repo's `deploy-docs` workflow then:
+  1. checks out the code repo's `docs/` into `physiclaw-docs/`,
+  2. runs `scripts/sync-docs.mjs` to produce `sync-docs/{en,zh}`,
+  3. runs the docs build (`npm run build:docs`),
+  4. deploys the output to the `docs.physiclaw.ai` Vercel project.
+
+The code repo never holds the `VERCEL_TOKEN` — it only sends the dispatch.
+
+> **Trade-off:** this is auto-publish from the latest docs commit, not pinned/reproducible releases. For a small, hand-authored docs set that's the right call — docs go live the moment they merge.
+
+## Docs content & conventions
+
+### Where docs live
+
+All documentation Markdown lives in the **code repo** at `docs/`. To edit docs, open a PR against
+[`physiclaw/PhysiClaw`](https://github.com/physiclaw/PhysiClaw), not this repo.
+
+### Internationalization (i18n)
+
+**Authoring format** — translations are **co-located by filename suffix**. Each English file has a
+matching Chinese sibling sitting right next to it in the code repo's `docs/`:
+
+```
+docs/
+├── intro.mdx              ← English
+├── intro.zh.mdx           ← 简体中文
+├── guides/
+│   ├── setup.mdx          ← English
+│   └── setup.zh.mdx       ← 简体中文
+```
+
+- A file **without** `.zh` is **English**; a file with `.zh` before the extension is **Chinese**.
+- Co-locating keeps a doc and its translation in the same directory and the same PR, so a reviewer
+  sees both change together.
+
+**Build format** — Starlight expects [directory-based locales](https://starlight.astro.build/guides/i18n/).
+The original docs are checked out into the level-1 `physiclaw-docs/` folder, and `scripts/sync-docs.mjs`
+splits them by locale into `sync-docs/` (both gitignored), stripping the `.zh` suffix and preserving
+subdirectories:
+
+| Authored — `physiclaw-docs/` | → Split — `sync-docs/`  | Route                          |
+| ---------------------------- | ----------------------- | ------------------------------ |
+| `intro.mdx`                  | `en/intro.mdx`          | `docs.physiclaw.ai/en/intro`   |
+| `intro.zh.mdx`               | `zh/intro.mdx`          | `docs.physiclaw.ai/zh/intro`   |
+| `guides/setup.mdx`           | `en/guides/setup.mdx`   | `.../en/guides/setup`          |
+| `guides/setup.zh.mdx`        | `zh/guides/setup.mdx`   | `.../zh/guides/setup`          |
+
+Because the relative path is identical under `en/` and `zh/`, Starlight automatically links the two
+as translations and falls back to the default locale when a translation is missing.
+
+Locales are configured in the docs build's `astro.config.docs.mjs`, and the default language is a
+**single constant**:
+
+```js
+// astro.config.docs.mjs — the Starlight docs build
+const DEFAULT_LOCALE = 'en';          // ← change this one value to switch the default language
+
+const LOCALES = {
+  en: { label: 'English',  lang: 'en'    },
+  zh: { label: '简体中文', lang: 'zh-CN' },
+};
+
+export default defineConfig({
+  integrations: [starlight({ title: 'PhysiClaw Docs', defaultLocale: DEFAULT_LOCALE, locales: LOCALES })],
+  redirects: { '/': `/${DEFAULT_LOCALE}/` },   // bare docs.physiclaw.ai → default language
+});
+```
+
+### Changing the default language
+
+Set `DEFAULT_LOCALE` to `'zh'` and **everything follows from that one edit** — Starlight's fallback
+locale and the `/` → `/{locale}/` redirect both update. No files are renamed and the build is
+unchanged, because the **default language is independent of the filename suffix**:
+
+- The `.zh` suffix only marks *which physical file is Chinese* — it is **not** tied to which locale is
+  default. `scripts/sync-docs.mjs` maps `'' → en` and `'.zh' → zh` regardless of `DEFAULT_LOCALE`.
+- So you can make Chinese the default site language while English files stay unsuffixed (and vice
+  versa) — the two concerns never collide.
+
+> To also flip the *authoring* convention (make Chinese the unsuffixed file), change the suffix map in
+> `scripts/sync-docs.mjs` — but that's rarely needed; keep authoring stable and just switch the
+> default served language.
+
+## Docs renderer stack
+
+The docs site is **[Starlight](https://starlight.astro.build)** (Astro's docs framework). It provides,
+out of the box, what larger docs sites hand-roll:
+
+- **Directory-based i18n** with a language picker (`en` / `zh`).
+- **Built-in full-text search** (Pagefind, bundled) — no backend.
+- **Shiki** syntax highlighting and **MDX** components.
+- Auto-generated, per-locale **sidebar**.
+
+The only custom code is **one script**, `scripts/sync-docs.mjs`, that bridges the authoring convention
+to Starlight's layout. It reads the original docs from `physiclaw-docs/`, then writes every `*.mdx`
+into `sync-docs/en/` and every `*.zh.mdx` into `sync-docs/zh/` (`.zh` trimmed, subdirectories
+preserved), cleaning `sync-docs/` first so builds are idempotent. Starlight's docs collection is
+pointed at `sync-docs/` via its content-collection loader (`src/content.config.ts`).
+
+It runs automatically before the docs build (wired as `prebuild:docs`), and must be run manually
+before previewing docs locally (the dev server does not trigger it).
+
+> **Brand theming:** Starlight ships its own theme, so the docs won't share components with the
+> custom landing page automatically. Align them via Starlight's customization — set the accent color,
+> fonts (Inter / JetBrains Mono), and logo to match the crab brand, and override CSS as needed.
+
+## Local development
+
+Requires **Node ≥ 22.12.0**. To work on the **landing page**:
 
 ```sh
-npm create astro@latest -- --template minimal
+git clone https://github.com/physiclaw/PhysiClaw-site.git
+cd PhysiClaw-site
+npm install
+npm run dev          # http://localhost:4321
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+To preview the **docs**, check out the code repo's `docs/` into `physiclaw-docs/`, run the sync step
+to populate `sync-docs/`, then start the docs dev server:
 
-## 🚀 Project Structure
-
-Inside of your Astro project, you'll see the following folders and files:
-
-```text
-/
-├── public/
-├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
+```sh
+git clone --depth 1 https://github.com/physiclaw/PhysiClaw.git /tmp/physiclaw
+cp -r /tmp/physiclaw/docs physiclaw-docs
+node scripts/sync-docs.mjs          # physiclaw-docs → sync-docs/{en,zh}
+npm run dev:docs
 ```
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+Re-run `node scripts/sync-docs.mjs` after editing anything in `physiclaw-docs/`.
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
+| Command              | Action                                               |
+| -------------------- | ---------------------------------------------------- |
+| `npm run dev`        | Landing dev server at `localhost:4321`               |
+| `npm run dev:docs`   | Starlight docs dev server                            |
+| `npm run build`      | Build the **landing** to `./dist/`                   |
+| `npm run build:docs` | Sync + build the **Starlight docs** to `./dist-docs/`|
+| `npm run preview`    | Preview the landing build locally                    |
 
-Any static assets, like images, can be placed in the `public/` directory.
+## Project structure
 
-## 🧞 Commands
+```
+physiclaw-docs/              # Original docs checked out from the code repo — gitignored
+│                            #   co-located *.mdx / *.zh.mdx
+sync-docs/                   # Split output, Starlight reads this — gitignored
+├── en/                      #   ← from *.mdx
+└── zh/                      #   ← from *.zh.mdx  (.zh trimmed)
+src/
+├── layouts/Layout.astro     # Landing: <head>, fonts, meta, dark/light theme toggle
+├── pages/index.astro        # Landing page
+├── content.config.ts        # Starlight docs collection → loads from ../sync-docs
+└── styles/global.css        # Tailwind import + @theme design tokens (dark + light)
+scripts/sync-docs.mjs        # split physiclaw-docs → sync-docs/{en,zh}
+public/                      # SVG mascot, illustrations, favicons
+astro.config.mjs             # Landing build: Astro + Tailwind + Vercel adapter
+astro.config.docs.mjs        # Docs build:    Starlight (locales, redirect) + Vercel adapter
+```
 
-All commands are run from the root of the project, from a terminal:
+The repo has **two build targets**: the landing (`astro.config.mjs` → `physiclaw.ai`) and the
+Starlight docs (`astro.config.docs.mjs` → `docs.physiclaw.ai`). They build independently, which is why
+the docs `/` → default-locale redirect never affects the landing page at `/`.
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
+## Deployment
 
-## 👀 Want to learn more?
+Two Vercel projects, each building a different target from this repo:
 
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+| Project | Domain | Build | Trigger |
+| ------- | ------ | ----- | ------- |
+| Landing | `physiclaw.ai` | `npm run build` | push to this repo (native Vercel git integration) |
+| Docs | `docs.physiclaw.ai` | `npm run build:docs` | `repository_dispatch` from the code repo's `docs/**` changes |
+
+**DNS** (Cloudflare): `docs.physiclaw.ai` is a `CNAME → cname.vercel-dns.com`, **DNS-only (grey cloud)** so Vercel issues and serves its own TLS — matching the existing `www` record.
+
+**Secrets:** keep `VERCEL_TOKEN` in *this* repo's Actions secrets. Scope the docs Vercel project to a dedicated team (or use environment protection) to contain it. The code repo holds only the dispatch token.
+
+## Status
+
+- ✅ **Landing page** — live at `physiclaw.ai`.
+- 🚧 **Docs pipeline** — the design above; the Starlight setup, the `scripts/sync-docs.mjs` split, the `deploy-docs` workflow, the code-repo dispatch Action, and the `docs.physiclaw.ai` project are the rollout plan.
+
+## Contributing
+
+- **Landing page / site presentation / docs theme** → edit this repo.
+- **Documentation content** → edit `docs/` in [`physiclaw/PhysiClaw`](https://github.com/physiclaw/PhysiClaw),
+  adding both the English file and its `.zh` sibling.
+
+## License
+
+MIT

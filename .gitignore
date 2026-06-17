@@ -1,6 +1,14 @@
 node_modules
 .vercel
-dist
 .astro
 .DS_Store
 .vscode
+
+# Build output (dist = landing, dist-docs = Starlight docs)
+dist
+dist-docs
+
+# Original docs checked out from physiclaw/PhysiClaw (co-located .mdx / .zh.mdx)
+physiclaw-docs
+# Generated Starlight content, split by locale (en/ + zh/) by scripts/sync-docs.mjs
+sync-docs

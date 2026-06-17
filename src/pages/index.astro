@@ -1,31 +1,57 @@
 ---
 import Layout from '../layouts/Layout.astro';
+
+// GitHub mark — used in both the header and the hero CTA.
+const githubIconPath =
+  'M12 .5C5.37.5 0 5.78 0 12.29c0 5.2 3.44 9.6 8.21 11.16.6.11.82-.25.82-.56v-2c-3.34.71-4.04-1.59-4.04-1.59-.55-1.37-1.34-1.74-1.34-1.74-1.09-.74.08-.72.08-.72 1.21.08 1.84 1.22 1.84 1.22 1.07 1.8 2.81 1.28 3.5.98.11-.76.42-1.28.76-1.58-2.67-.3-5.47-1.31-5.47-5.83 0-1.29.47-2.34 1.23-3.17-.12-.3-.53-1.52.12-3.16 0 0 1.01-.32 3.3 1.21a11.6 11.6 0 016 0c2.29-1.53 3.3-1.21 3.3-1.21.65 1.64.24 2.86.12 3.16.77.83 1.23 1.88 1.23 3.17 0 4.53-2.81 5.53-5.49 5.82.43.36.81 1.08.81 2.18v3.24c0 .31.21.68.82.56A12.01 12.01 0 0024 12.29C24 5.78 18.63.5 12 .5z';
 ---
 
 <Layout>
-  <!-- Theme toggle — fixed top right -->
-  <button
-    id="theme-toggle"
-    class="fixed top-4 right-4 z-50 p-2.5 rounded-lg text-text-secondary hover:text-text hover:bg-bg-elevated transition-colors"
-    aria-label="Toggle theme"
-  >
-    <svg id="sun-icon" class="w-5 h-5 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-      <circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
-    </svg>
-    <svg id="moon-icon" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-      <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
-    </svg>
-  </button>
+  <!-- Header -->
+  <header class="sticky top-0 z-50 border-b border-border-subtle bg-bg/70 backdrop-blur-xl">
+    <nav class="mx-auto max-w-6xl px-6 h-14 flex items-center justify-between">
+      <a href="/" class="flex items-center gap-2.5">
+        <img src="/crab.svg" alt="" class="w-7 h-7" />
+        <span class="font-semibold tracking-tight text-text">PhysiClaw</span>
+      </a>
+      <div class="flex items-center gap-0.5 sm:gap-1">
+        <a href="#how" class="hidden sm:inline-flex px-3 py-2 text-sm text-text-secondary hover:text-text transition-colors">How it works</a>
+        <a href="#hardware" class="hidden sm:inline-flex px-3 py-2 text-sm text-text-secondary hover:text-text transition-colors">Hardware</a>
+        <a href="https://docs.physiclaw.ai" class="inline-flex items-center gap-1 px-3 py-2 text-sm text-text-secondary hover:text-text transition-colors">
+          Docs
+          <svg class="w-3 h-3 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M17 7H9M17 7v8"/></svg>
+        </a>
+        <a href="https://github.com/physiclaw/PhysiClaw" target="_blank" rel="noopener" aria-label="GitHub" class="p-2 text-text-secondary hover:text-text transition-colors">
+          <svg class="w-[18px] h-[18px]" fill="currentColor" viewBox="0 0 24 24"><path d={githubIconPath}/></svg>
+        </a>
+        <button id="theme-toggle" class="p-2 rounded-lg text-text-secondary hover:text-text transition-colors" aria-label="Toggle theme">
+          <svg id="sun-icon" class="w-[18px] h-[18px] hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+          </svg>
+          <svg id="moon-icon" class="w-[18px] h-[18px]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+          </svg>
+        </button>
+      </div>
+    </nav>
+  </header>
 
   <!-- Hero -->
-  <section class="flex items-start justify-center">
-    <div class="mx-auto max-w-3xl px-6 pt-12 pb-16 text-center">
+  <section class="relative overflow-hidden">
+    <div class="hero-grid" aria-hidden="true"></div>
+    <div class="relative mx-auto max-w-3xl px-6 pt-16 sm:pt-20 pb-20 text-center">
       <!-- Mascot -->
-      <div class="mb-2">
-        <img src="/crab.svg" alt="PhysiClaw crab mascot" class="w-40 h-40 sm:w-48 sm:h-48 mx-auto drop-shadow-lg" />
+      <div class="mb-5">
+        <img src="/crab.svg" alt="PhysiClaw crab mascot" class="w-36 h-36 sm:w-44 sm:h-44 mx-auto drop-shadow-[0_18px_50px_rgba(232,93,38,0.22)]" />
       </div>
 
-      <h1 class="text-4xl sm:text-5xl md:text-[3.5rem] font-bold tracking-tight leading-none mb-3 text-accent">
+      <!-- Status chip -->
+      <div class="inline-flex items-center gap-2 mb-6 px-3 py-1 rounded-full border border-border-subtle bg-bg-elevated/60 font-mono text-[11px] tracking-wide text-text-tertiary">
+        <span class="w-1.5 h-1.5 rounded-full bg-green animate-pulse"></span>
+        camera eyes · stylus finger · zero APIs
+      </div>
+
+      <h1 class="text-4xl sm:text-5xl md:text-[3.5rem] font-bold tracking-tight leading-none mb-4 text-accent">
         PhysiClaw
       </h1>
 
@@ -33,11 +59,22 @@ import Layout from '../layouts/Layout.astro';
         The AI that physically uses your phone.
       </p>
 
-      <p class="text-[15px] sm:text-base text-text-secondary max-w-lg mx-auto mb-6 leading-[1.7]">
+      <p class="text-[15px] sm:text-base text-text-secondary max-w-lg mx-auto mb-8 leading-[1.7]">
         Order food, hail rides, check your bank, reply to messages.<br/>
         Any app, any phone, no APIs, no OAuth.
       </p>
 
+      <!-- CTAs -->
+      <div class="flex flex-wrap items-center justify-center gap-3">
+        <a href="https://docs.physiclaw.ai" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-accent text-white font-medium text-sm hover:bg-accent-dim transition-colors shadow-[0_10px_34px_-12px_var(--color-accent)]">
+          Read the docs
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </a>
+        <a href="https://github.com/physiclaw/PhysiClaw" target="_blank" rel="noopener" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg border border-border text-text-secondary hover:text-text hover:border-accent/40 font-medium text-sm transition-colors">
+          <svg class="w-[18px] h-[18px]" fill="currentColor" viewBox="0 0 24 24"><path d={githubIconPath}/></svg>
+          GitHub
+        </a>
+      </div>
     </div>
   </section>
 
@@ -400,7 +437,7 @@ import Layout from '../layouts/Layout.astro';
 
         <div class="bg-bg-elevated border border-border rounded-xl p-5">
           <div class="text-xs font-mono text-text-tertiary mb-3">Clone the repo</div>
-          <pre class="font-mono text-sm text-green"><code>git clone https://github.com/echosprint/PhysiClaw.git
+          <pre class="font-mono text-sm text-green"><code>git clone https://github.com/physiclaw/PhysiClaw.git
 cd PhysiClaw</code></pre>
         </div>
 
@@ -539,7 +576,7 @@ cd PhysiClaw</code></pre>
           <span class="text-text-tertiary">MIT License</span>
         </div>
         <div class="flex items-center gap-4 text-sm text-text-tertiary">
-          <a href="https://github.com/echosprint/PhysiClaw" target="_blank" rel="noopener" class="hover:text-text transition-colors">GitHub</a>
+          <a href="https://github.com/physiclaw/PhysiClaw" target="_blank" rel="noopener" class="hover:text-text transition-colors">GitHub</a>
           <span>&middot;</span>
           <span>physiclaw.ai</span>
         </div>

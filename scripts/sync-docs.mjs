@@ -1,0 +1,112 @@
+#!/usr/bin/env node
+// Splits the co-located bilingual docs in `physiclaw-docs/` into the per-locale
+// layout Starlight expects, under its default content path `docs-site/content/docs/`:
+//
+//   physiclaw-docs/intro.mdx      → docs-site/content/docs/en/intro.mdx
+//   physiclaw-docs/intro.zh.mdx   → docs-site/content/docs/zh/intro.mdx   (.zh trimmed)
+//
+// Writing to the default path lets Starlight's docsLoader() + sidebar
+// autogenerate work without a custom loader. Non-markdown assets are copied
+// into every locale. The output dir is wiped first so the build is idempotent.
+
+import { readdir, mkdir, copyFile, rm, stat } from 'node:fs/promises';
+import { dirname, extname, join, relative, sep } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+// The single source of truth for the authoring convention.
+// '' (no suffix) is the default language; '.zh' marks the Chinese sibling.
+export const LOCALE_BY_SUFFIX = { '': 'en', '.zh': 'zh' };
+
+const MARKDOWN = new Set(['.md', '.mdx']);
+
+/**
+ * Map a source filename to its target locale and output filename.
+ * @param {string} filename e.g. "intro.zh.mdx"
+ * @returns {{ locale: string, outName: string }}
+ */
+export function classify(filename) {
+  const ext = extname(filename);
+  const base = filename.slice(0, -ext.length || undefined);
+
+  for (const [suffix, locale] of Object.entries(LOCALE_BY_SUFFIX)) {
+    if (suffix && base.endsWith(suffix)) {
+      return { locale, outName: base.slice(0, -suffix.length) + ext };
+    }
+  }
+  return { locale: LOCALE_BY_SUFFIX[''], outName: filename };
+}
+
+async function walk(dir) {
+  const out = [];
+  for (const entry of await readdir(dir, { withFileTypes: true })) {
+    const full = join(dir, entry.name);
+    if (entry.isDirectory()) out.push(...(await walk(full)));
+    else if (entry.isFile()) out.push(full);
+  }
+  return out;
+}
+
+/**
+ * Split a source docs tree into per-locale directories.
+ * @param {{ src: string, out: string }} opts
+ * @returns {Promise<Record<string, number>>} count of markdown docs per locale
+ */
+export async function syncDocs({ src, out }) {
+  await rm(out, { recursive: true, force: true });
+
+  const locales = [...new Set(Object.values(LOCALE_BY_SUFFIX))];
+  const counts = Object.fromEntries(locales.map((l) => [l, 0]));
+
+  const madeDirs = new Set();
+  const ensureDir = async (dir) => {
+    if (madeDirs.has(dir)) return;
+    await mkdir(dir, { recursive: true });
+    madeDirs.add(dir);
+  };
+
+  for (const file of await walk(src)) {
+    const rel = relative(src, file);
+    const parts = rel.split(sep);
+    const name = parts.pop();
+    const ext = extname(name);
+
+    if (MARKDOWN.has(ext)) {
+      // Markdown: route to one locale, trimming the .zh suffix.
+      const { locale, outName } = classify(name);
+      const dest = join(out, locale, ...parts, outName);
+      await ensureDir(dirname(dest));
+      await copyFile(file, dest);
+      counts[locale] += 1;
+    } else {
+      // Asset: shared across every locale so relative links resolve.
+      for (const locale of locales) {
+        const dest = join(out, locale, ...parts, name);
+        await ensureDir(dirname(dest));
+        await copyFile(file, dest);
+      }
+    }
+  }
+  return counts;
+}
+
+// ── CLI ───────────────────────────────────────────────────────────────────
+const isMain = process.argv[1] === fileURLToPath(import.meta.url);
+if (isMain) {
+  const src = process.env.DOCS_SRC || 'physiclaw-docs';
+  // Starlight's default content location, so docsLoader() + autogenerate work.
+  const out = process.env.DOCS_OUT || 'docs-site/content/docs';
+
+  try {
+    await stat(src);
+  } catch {
+    console.error(`✗ sync-docs: source "${src}" not found.`);
+    console.error(`  Check out the code repo's docs/ into ${src}/ first (see README).`);
+    process.exit(1);
+  }
+
+  const counts = await syncDocs({ src, out });
+  const summary = Object.entries(counts)
+    .map(([l, n]) => `${l}:${n}`)
+    .join('  ');
+  console.log(`✓ sync-docs: ${src} → ${out}  (${summary})`);
+}

@@ -55,8 +55,8 @@ This split follows OpenClaw's docs setup: the powerful deploy credential stays *
 - **Edit the landing page** (here) → Vercel's native git integration redeploys `physiclaw.ai`.
 - **Edit docs** (`docs/**` in the code repo) → a GitHub Action there fires a `repository_dispatch` at this repo. This repo's `deploy-docs` workflow then:
   1. checks out the code repo's `docs/` into `physiclaw-docs/`,
-  2. runs `scripts/sync-docs.mjs` to produce `sync-docs/{en,zh}`,
-  3. runs the docs build (`npm run build:docs`),
+  2. runs `scripts/sync-docs.mjs` to produce `docs-site/content/docs/{en,zh}`,
+  3. runs the docs build (`pnpm build:docs`),
   4. deploys the output to the `docs.physiclaw.ai` Vercel project.
 
 The code repo never holds the `VERCEL_TOKEN` — it only sends the dispatch.
@@ -90,11 +90,11 @@ docs/
 
 **Build format** — Starlight expects [directory-based locales](https://starlight.astro.build/guides/i18n/).
 The original docs are checked out into the level-1 `physiclaw-docs/` folder, and `scripts/sync-docs.mjs`
-splits them by locale into `sync-docs/` (both gitignored), stripping the `.zh` suffix and preserving
-subdirectories:
+splits them by locale into Starlight's content path `docs-site/content/docs/` (both gitignored),
+stripping the `.zh` suffix and preserving subdirectories:
 
-| Authored — `physiclaw-docs/` | → Split — `sync-docs/`  | Route                          |
-| ---------------------------- | ----------------------- | ------------------------------ |
+| Authored — `physiclaw-docs/` | → Split — `docs-site/content/docs/` | Route                          |
+| ---------------------------- | ---------------------------------- | ------------------------------ |
 | `intro.mdx`                  | `en/intro.mdx`          | `docs.physiclaw.ai/en/intro`   |
 | `intro.zh.mdx`               | `zh/intro.mdx`          | `docs.physiclaw.ai/zh/intro`   |
 | `guides/setup.mdx`           | `en/guides/setup.mdx`   | `.../en/guides/setup`          |
@@ -144,74 +144,83 @@ out of the box, what larger docs sites hand-roll:
 - **Directory-based i18n** with a language picker (`en` / `zh`).
 - **Built-in full-text search** (Pagefind, bundled) — no backend.
 - **Shiki** syntax highlighting and **MDX** components.
-- Auto-generated, per-locale **sidebar**.
+- **Auto-generated**, per-locale **sidebar** with translated group labels (`astro.config.docs.mjs`),
+  ordered by each doc's `sidebar.order` frontmatter — new docs appear without touching the config.
 
 The only custom code is **one script**, `scripts/sync-docs.mjs`, that bridges the authoring convention
 to Starlight's layout. It reads the original docs from `physiclaw-docs/`, then writes every `*.mdx`
-into `sync-docs/en/` and every `*.zh.mdx` into `sync-docs/zh/` (`.zh` trimmed, subdirectories
-preserved), cleaning `sync-docs/` first so builds are idempotent. Starlight's docs collection is
-pointed at `sync-docs/` via its content-collection loader (`src/content.config.ts`).
+into `docs-site/content/docs/en/` and every `*.zh.mdx` into `docs-site/content/docs/zh/` (`.zh` trimmed,
+subdirectories preserved), cleaning that directory first so builds are idempotent. Because it writes
+to Starlight's **default** content path, the stock `docsLoader()` (in `docs-site/content.config.ts`)
+reads it and sidebar `autogenerate` works.
 
 It runs automatically before the docs build (wired as `prebuild:docs`), and must be run manually
 before previewing docs locally (the dev server does not trigger it).
 
-> **Brand theming:** Starlight ships its own theme, so the docs won't share components with the
-> custom landing page automatically. Align them via Starlight's customization — set the accent color,
-> fonts (Inter / JetBrains Mono), and logo to match the crab brand, and override CSS as needed.
+> **Brand theming:** Starlight ships its own theme, so it doesn't share components with the landing
+> page automatically — it's aligned by hand in `docs-site/styles/docs.css`, which maps the landing's
+> design tokens onto Starlight's variables (orange accent `#e85d26`, Inter + JetBrains Mono, the
+> near-black canvas, hairline rules, mono uppercase sidebar labels, and a coordinate-grid hero).
 
 ## Local development
 
-Requires **Node ≥ 22.12.0**. To work on the **landing page**:
+Requires **Node ≥ 22.12.0** and **pnpm**. To work on the **landing page**:
 
 ```sh
 git clone https://github.com/physiclaw/PhysiClaw-site.git
 cd PhysiClaw-site
-npm install
-npm run dev          # http://localhost:4321
+pnpm install
+pnpm dev             # http://localhost:4321
 ```
 
-To preview the **docs**, check out the code repo's `docs/` into `physiclaw-docs/`, run the sync step
-to populate `sync-docs/`, then start the docs dev server:
+To preview the **docs**, check out the code repo's `docs/` into `physiclaw-docs/`, then run the docs
+dev server (it syncs `physiclaw-docs/` → `docs-site/content/docs/` first):
 
 ```sh
 git clone --depth 1 https://github.com/physiclaw/PhysiClaw.git /tmp/physiclaw
 cp -r /tmp/physiclaw/docs physiclaw-docs
-node scripts/sync-docs.mjs          # physiclaw-docs → sync-docs/{en,zh}
-npm run dev:docs
+pnpm dev:docs        # syncs, then serves the Starlight site
 ```
 
-Re-run `node scripts/sync-docs.mjs` after editing anything in `physiclaw-docs/`.
+Re-run `pnpm sync:docs` after editing anything in `physiclaw-docs/`.
 
-| Command              | Action                                               |
-| -------------------- | ---------------------------------------------------- |
-| `npm run dev`        | Landing dev server at `localhost:4321`               |
-| `npm run dev:docs`   | Starlight docs dev server                            |
-| `npm run build`      | Build the **landing** to `./dist/`                   |
-| `npm run build:docs` | Sync + build the **Starlight docs** to `./dist-docs/`|
-| `npm run preview`    | Preview the landing build locally                    |
+| Command            | Action                                                |
+| ------------------ | ----------------------------------------------------- |
+| `pnpm dev`         | Landing dev server at `localhost:4321`                |
+| `pnpm dev:docs`    | Sync + serve the Starlight docs                       |
+| `pnpm sync:docs`   | Split `physiclaw-docs/` → `docs-site/content/docs/{en,zh}` |
+| `pnpm build`       | Build the **landing** to `./dist/`                    |
+| `pnpm build:docs`  | Sync + build the **Starlight docs** to `./dist-docs/` |
+| `pnpm test`        | Run the `sync-docs` unit tests                        |
 
 ## Project structure
 
 ```
 physiclaw-docs/              # Original docs checked out from the code repo — gitignored
 │                            #   co-located *.mdx / *.zh.mdx
-sync-docs/                   # Split output, Starlight reads this — gitignored
-├── en/                      #   ← from *.mdx
-└── zh/                      #   ← from *.zh.mdx  (.zh trimmed)
-src/
-├── layouts/Layout.astro     # Landing: <head>, fonts, meta, dark/light theme toggle
-├── pages/index.astro        # Landing page
-├── content.config.ts        # Starlight docs collection → loads from ../sync-docs
-└── styles/global.css        # Tailwind import + @theme design tokens (dark + light)
-scripts/sync-docs.mjs        # split physiclaw-docs → sync-docs/{en,zh}
-public/                      # SVG mascot, illustrations, favicons
+src/                         # ── LANDING (astro.config.mjs) ──
+├── layouts/Layout.astro     #   <head>, fonts, meta, dark/light theme toggle
+├── pages/index.astro        #   landing page
+└── styles/global.css        #   Tailwind import + @theme design tokens
+docs-site/                    # ── DOCS (astro.config.docs.mjs) ──
+├── content/docs/            #   Split output, Starlight reads this — gitignored
+│   ├── en/                  #     ← from *.mdx
+│   └── zh/                  #     ← from *.zh.mdx  (.zh trimmed)
+├── content.config.ts        #   Starlight docs collection (stock docsLoader)
+├── styles/docs.css          #   Starlight brand theme (mirrors the landing tokens)
+└── assets/crab.svg          #   docs logo
+scripts/
+├── sync-docs.mjs            # split physiclaw-docs → docs-site/content/docs/{en,zh}
+└── sync-docs.test.mjs       # unit tests (node:test)
+public/                      # SVG mascot, illustrations, favicons (shared)
 astro.config.mjs             # Landing build: Astro + Tailwind + Vercel adapter
-astro.config.docs.mjs        # Docs build:    Starlight (locales, redirect) + Vercel adapter
+astro.config.docs.mjs        # Docs build:    Starlight (locales, redirect)
 ```
 
-The repo has **two build targets**: the landing (`astro.config.mjs` → `physiclaw.ai`) and the
-Starlight docs (`astro.config.docs.mjs` → `docs.physiclaw.ai`). They build independently, which is why
-the docs `/` → default-locale redirect never affects the landing page at `/`.
+The repo has **two build targets** with separate source roots: the landing (`src/` →
+`astro.config.mjs` → `physiclaw.ai`) and the Starlight docs (`docs-site/` → `astro.config.docs.mjs` →
+`docs.physiclaw.ai`). Separate roots are why the docs `/` → default-locale redirect never collides
+with the landing page at `/`.
 
 ## Deployment
 
@@ -219,8 +228,8 @@ Two Vercel projects, each building a different target from this repo:
 
 | Project | Domain | Build | Trigger |
 | ------- | ------ | ----- | ------- |
-| Landing | `physiclaw.ai` | `npm run build` | push to this repo (native Vercel git integration) |
-| Docs | `docs.physiclaw.ai` | `npm run build:docs` | `repository_dispatch` from the code repo's `docs/**` changes |
+| Landing | `physiclaw.ai` | `pnpm build` | push to this repo (native Vercel git integration) |
+| Docs | `docs.physiclaw.ai` | `pnpm build:docs` | `repository_dispatch` from the code repo's `docs/**` changes |
 
 **DNS** (Cloudflare): `docs.physiclaw.ai` is a `CNAME → cname.vercel-dns.com`, **DNS-only (grey cloud)** so Vercel issues and serves its own TLS — matching the existing `www` record.
 
@@ -229,7 +238,11 @@ Two Vercel projects, each building a different target from this repo:
 ## Status
 
 - ✅ **Landing page** — live at `physiclaw.ai`.
-- 🚧 **Docs pipeline** — the design above; the Starlight setup, the `scripts/sync-docs.mjs` split, the `deploy-docs` workflow, the code-repo dispatch Action, and the `docs.physiclaw.ai` project are the rollout plan.
+- ✅ **Docs renderer** — Starlight site builds bilingual (en/zh) with brand theme, search, and i18n
+  routing. `scripts/sync-docs.mjs` is implemented and unit-tested (`pnpm test`). Template docs live in
+  `physiclaw-docs/` for local preview (gitignored — the real content ships in the code repo's `docs/`).
+- 🚧 **Deploy wiring** — still to do: create the `docs.physiclaw.ai` Vercel project, the `deploy-docs`
+  workflow, and the code-repo `repository_dispatch` Action.
 
 ## Contributing
 

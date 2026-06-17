@@ -88,3 +88,22 @@ html {
 html[data-theme="light"] .ascii-diagram code {
   filter: brightness(0.85);
 }
+
+/* Engineering coordinate-grid backdrop — used behind the hero */
+.hero-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(var(--color-border-subtle) 1px, transparent 1px),
+    linear-gradient(90deg, var(--color-border-subtle) 1px, transparent 1px);
+  background-size: 46px 46px;
+  -webkit-mask-image: radial-gradient(ellipse 62% 58% at 50% 28%, #000 0%, transparent 76%);
+  mask-image: radial-gradient(ellipse 62% 58% at 50% 28%, #000 0%, transparent 76%);
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+/* Smooth in-page anchor jumps clear the sticky header */
+:target {
+  scroll-margin-top: 4.5rem;
+}

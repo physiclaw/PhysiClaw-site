@@ -9,26 +9,17 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro",
-    "sync:docs": "node scripts/sync-docs.mjs",
-    "prebuild:docs": "node scripts/sync-docs.mjs",
-    "build:docs": "astro build --config astro.config.docs.mjs",
-    "dev:docs": "node scripts/sync-docs.mjs && astro dev --config astro.config.docs.mjs",
-    "preview:docs": "astro preview --config astro.config.docs.mjs",
-    "test": "node --test scripts/*.test.mjs"
+    "astro": "astro"
   },
   "dependencies": {
-    "@astrojs/starlight": "^0.40.0",
     "@astrojs/vercel": "^10.0.0",
     "@tailwindcss/vite": "^4.2.1",
     "astro": "^6.4.5",
-    "sharp": "^0.34.0",
     "tailwindcss": "^4.2.1"
   },
   "pnpm": {
     "onlyBuiltDependencies": [
       "esbuild",
-      "sharp",
       "@tailwindcss/oxide"
     ]
   }

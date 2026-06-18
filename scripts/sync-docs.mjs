@@ -8,8 +8,11 @@
 // Writing to the default path lets Starlight's docsLoader() + sidebar
 // autogenerate work without a custom loader. Non-markdown assets are copied
 // into every locale. The output dir is wiped first so the build is idempotent.
+//
+// Authors write import-free Markdown: .mdx files are preprocessed here to inject
+// the `@astrojs/starlight/components` import for whatever components they use.
 
-import { readdir, mkdir, copyFile, rm, stat } from 'node:fs/promises';
+import { readdir, readFile, writeFile, mkdir, copyFile, rm, stat } from 'node:fs/promises';
 import { dirname, extname, join, relative, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -18,6 +21,45 @@ import { fileURLToPath } from 'node:url';
 export const LOCALE_BY_SUFFIX = { '': 'en', '.zh': 'zh' };
 
 const MARKDOWN = new Set(['.md', '.mdx']);
+
+// Starlight components an author may use without importing them — the sync step
+// injects the import so docs read like plain Markdown.
+export const STARLIGHT_COMPONENTS = [
+  'Aside', 'Badge', 'Card', 'CardGrid', 'Code', 'FileTree',
+  'Icon', 'LinkButton', 'LinkCard', 'Steps', 'TabItem', 'Tabs',
+];
+
+// One detection regex, compiled once. Longest names first so `CardGrid` wins
+// over its `Card` prefix.
+const COMPONENT_TAG = new RegExp(
+  `<(${[...STARLIGHT_COMPONENTS].sort((a, b) => b.length - a.length).join('|')})(?=[\\s/>])`,
+  'g'
+);
+
+/**
+ * Inject the `@astrojs/starlight/components` import for whichever components an
+ * .mdx file references, right after its frontmatter. No-op when none are used
+ * or an import is already present. Component tags shown inside code spans/blocks
+ * are ignored — a lightweight heuristic that fits prose docs; reach for a remark
+ * AST pass only if docs ever need finer control.
+ * @param {string} content
+ * @returns {string}
+ */
+export function injectComponentImports(content) {
+  if (/from ['"]@astrojs\/starlight\/components['"]/.test(content)) return content;
+
+  const prose = content.replace(/```[\s\S]*?```/g, '').replace(/`[^`]*`/g, '');
+  const used = [...new Set(Array.from(prose.matchAll(COMPONENT_TAG), (m) => m[1]))].sort();
+  if (used.length === 0) return content;
+
+  const importLine = `import { ${used.join(', ')} } from '@astrojs/starlight/components';\n`;
+  const frontmatter = content.match(/^---\n[\s\S]*?\n---\n/);
+  if (frontmatter) {
+    const at = frontmatter[0].length;
+    return content.slice(0, at) + '\n' + importLine + content.slice(at);
+  }
+  return importLine + '\n' + content;
+}
 
 /**
  * Map a source filename to its target locale and output filename.
@@ -75,7 +117,12 @@ export async function syncDocs({ src, out }) {
       const { locale, outName } = classify(name);
       const dest = join(out, locale, ...parts, outName);
       await ensureDir(dirname(dest));
-      await copyFile(file, dest);
+      if (ext === '.mdx') {
+        // Preprocess: inject component imports so authoring stays import-free.
+        await writeFile(dest, injectComponentImports(await readFile(file, 'utf8')));
+      } else {
+        await copyFile(file, dest);
+      }
       counts[locale] += 1;
     } else {
       // Asset: shared across every locale so relative links resolve.

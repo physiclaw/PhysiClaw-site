@@ -70,6 +70,36 @@ The code repo never holds the `VERCEL_TOKEN` — it only sends the dispatch.
 All documentation Markdown lives in the **code repo** at `docs/`. To edit docs, open a PR against
 [`physiclaw/PhysiClaw`](https://github.com/physiclaw/PhysiClaw), not this repo.
 
+### Authoring — write plain Markdown, no imports
+
+Docs are meant to read like Markdown, not like code. Authors **never write `import` statements**.
+
+- **Callouts** use native directives — no component needed:
+
+  ```md
+  :::note
+  Plain note.
+  :::
+
+  :::tip[Custom title]
+  A tip with a title. Also `:::caution` and `:::danger`.
+  :::
+  ```
+
+- **Rich components** ([Card, CardGrid, Steps, Tabs, FileTree, LinkCard, …](https://starlight.astro.build/components/))
+  are used as plain tags in an `.mdx` file — **the sync step injects the import** automatically:
+
+  ```mdx
+  <Steps>
+  1. First do this.
+  2. Then that.
+  </Steps>
+  ```
+
+Use `.md` for prose-only pages and `.mdx` when you reach for a component. `scripts/sync-docs.mjs`
+scans each `.mdx` and prepends `import { … } from '@astrojs/starlight/components'` for exactly the
+components used, so the source stays clean and Starlight still gets valid MDX.
+
 ### Internationalization (i18n)
 
 **Authoring format** — translations are **co-located by filename suffix**. Each English file has a
@@ -150,9 +180,11 @@ out of the box, what larger docs sites hand-roll:
 The only custom code is **one script**, `scripts/sync-docs.mjs`, that bridges the authoring convention
 to Starlight's layout. It reads the original docs from `physiclaw-docs/`, then writes every `*.mdx`
 into `docs-site/content/docs/en/` and every `*.zh.mdx` into `docs-site/content/docs/zh/` (`.zh` trimmed,
-subdirectories preserved), cleaning that directory first so builds are idempotent. Because it writes
-to Starlight's **default** content path, the stock `docsLoader()` (in `docs-site/content.config.ts`)
-reads it and sidebar `autogenerate` works.
+subdirectories preserved), cleaning that directory first so builds are idempotent. While copying each
+`.mdx`, it **injects the Starlight component import** so authors write import-free Markdown (see
+[Authoring](#authoring--write-plain-markdown-no-imports)). Because it writes to Starlight's **default**
+content path, the stock `docsLoader()` (in `docs-site/content.config.ts`) reads it and sidebar
+`autogenerate` works.
 
 It runs automatically before the docs build (wired as `prebuild:docs`), and must be run manually
 before previewing docs locally (the dev server does not trigger it).

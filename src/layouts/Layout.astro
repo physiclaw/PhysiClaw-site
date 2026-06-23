@@ -7,8 +7,8 @@ interface Props {
 }
 
 const {
-  title = 'PhysiClaw — Give AI Agents a Physical Body',
-  description = 'A robotic arm that lets AI agents physically operate any phone. Camera eyes, a stylus finger, zero APIs. Just unlock your phone and let the agent work.',
+  title = 'PhysiClaw — The AI that interacts with you in the real world',
+  description = 'PhysiClaw gives your AI agent a body: a robotic arm that sees the screen and taps any phone the way you do. Message it like a friend — no APIs, no OAuth, no jailbreak. Open source.',
 } = Astro.props;
 ---
 
@@ -28,15 +28,15 @@ const {
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
     <title>{title}</title>
     <!-- Prevent flash of wrong theme -->
     <script is:inline>
       (function() {
-        const saved = localStorage.getItem('theme');
-        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        const theme = saved || (prefersDark ? 'dark' : 'dark');
-        if (theme === 'light') {
+        // Mark JS as available so scroll-reveal can hide content before revealing it.
+        document.documentElement.classList.add('js');
+        // Dark-first: only switch to light when the user has explicitly chosen it.
+        if (localStorage.getItem('theme') === 'light') {
           document.documentElement.setAttribute('data-theme', 'light');
         }
       })();
@@ -72,6 +72,23 @@ const {
         }
         updateToggleIcons();
       });
+
+      // Scroll-reveal — fade sections in as they enter the viewport
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const reveals = document.querySelectorAll('.reveal');
+      if (reduceMotion || !('IntersectionObserver' in window)) {
+        reveals.forEach((el) => el.classList.add('in'));
+      } else {
+        const io = new IntersectionObserver((entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('in');
+              io.unobserve(entry.target);
+            }
+          });
+        }, { rootMargin: '0px 0px -10% 0px', threshold: 0.1 });
+        reveals.forEach((el) => io.observe(el));
+      }
     </script>
   </body>
 </html>

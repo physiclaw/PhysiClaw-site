@@ -1,30 +1,44 @@
 ---
 import Layout from '../layouts/Layout.astro';
 
-// GitHub mark — used in both the header and the hero CTA.
+// GitHub mark — used in the header and CTAs.
 const githubIconPath =
   'M12 .5C5.37.5 0 5.78 0 12.29c0 5.2 3.44 9.6 8.21 11.16.6.11.82-.25.82-.56v-2c-3.34.71-4.04-1.59-4.04-1.59-.55-1.37-1.34-1.74-1.34-1.74-1.09-.74.08-.72.08-.72 1.21.08 1.84 1.22 1.84 1.22 1.07 1.8 2.81 1.28 3.5.98.11-.76.42-1.28.76-1.58-2.67-.3-5.47-1.31-5.47-5.83 0-1.29.47-2.34 1.23-3.17-.12-.3-.53-1.52.12-3.16 0 0 1.01-.32 3.3 1.21a11.6 11.6 0 016 0c2.29-1.53 3.3-1.21 3.3-1.21.65 1.64.24 2.86.12 3.16.77.83 1.23 1.88 1.23 3.17 0 4.53-2.81 5.53-5.49 5.82.43.36.81 1.08.81 2.18v3.24c0 .31.21.68.82.56A12.01 12.01 0 0024 12.29C24 5.78 18.63.5 12 .5z';
+
+const steps = [
+  { icon: '<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>', title: 'Just Text it', body: 'Message PhysiClaw from any chat app, like texting a friend. With its own phone, it reads and replies on its own — no OAuth, no API to wire up.' },
+  { icon: '<path d="m9 9 5 12 1.8-5.2L21 14Z"/><path d="M7.2 2.2 8 5.1"/><path d="m5.1 8-2.9-.8"/><path d="M14 4.1 12 6"/><path d="m6 12-1.9 2"/>', title: 'Tap & Swipe', body: "It works the phone with a stylus — the same taps, swipes, and scrolls you'd use. It opens the right app for the task and navigates by hand, no special access required." },
+  { icon: '<path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/>', title: 'Eyes on the Screen', body: 'A camera is its eye. After every action it checks what changed — did it land, did the job get done — and glances back now and then so nothing slips by.' },
+  { icon: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/>', title: 'Safety First', body: 'It never runs commands on your computer or touches your files, and keeps only the memory and cron jobs it needs. Its whole world is the phone in front of it.' },
+];
+
+const solutions = [
+  'No APIs. No OAuth. No jailbreak.',
+  'One setup. Every app in the phone.',
+  'Works like a human — no robot trace to detect.',
+  "Does anything you'd do on your phone.",
+];
 ---
 
 <Layout>
   <!-- Header -->
   <header class="sticky top-0 z-50 border-b border-border-subtle bg-bg/70 backdrop-blur-xl">
-    <nav class="mx-auto max-w-6xl px-6 h-14 flex items-center justify-between">
-      <a href="/" class="flex items-center gap-2.5">
-        <img src="/crab.svg" alt="" class="w-7 h-7" />
-        <span class="font-semibold tracking-tight text-text">PhysiClaw</span>
+    <nav class="mx-auto max-w-6xl px-6 h-16 flex items-center justify-between">
+      <a href="/" class="flex items-center gap-2.5 group">
+        <img src="/crab.svg" alt="" class="w-7 h-7 transition-transform duration-300 group-hover:-rotate-6" />
+        <span class="font-display font-bold tracking-tight text-text text-[17px]">PhysiClaw</span>
       </a>
       <div class="flex items-center gap-0.5 sm:gap-1">
         <a href="#how" class="hidden sm:inline-flex px-3 py-2 text-sm text-text-secondary hover:text-text transition-colors">How it works</a>
-        <a href="#hardware" class="hidden sm:inline-flex px-3 py-2 text-sm text-text-secondary hover:text-text transition-colors">Hardware</a>
-        <a href="https://docs.physiclaw.ai" class="inline-flex items-center gap-1 px-3 py-2 text-sm text-text-secondary hover:text-text transition-colors">
+        <a href="#why" class="hidden sm:inline-flex px-3 py-2 text-sm text-text-secondary hover:text-text transition-colors">Why</a>
+        <a href="https://docs.physiclaw.ai" class="hidden sm:inline-flex items-center gap-1 px-3 py-2 text-sm text-text-secondary hover:text-text transition-colors">
           Docs
           <svg class="w-3 h-3 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M17 7H9M17 7v8"/></svg>
         </a>
-        <a href="https://github.com/physiclaw/PhysiClaw" target="_blank" rel="noopener" aria-label="GitHub" class="p-2 text-text-secondary hover:text-text transition-colors">
+        <a href="https://github.com/physiclaw/PhysiClaw" target="_blank" rel="noopener" aria-label="GitHub" class="inline-flex items-center justify-center w-10 h-10 rounded-lg text-text-secondary hover:text-text transition-colors">
           <svg class="w-[18px] h-[18px]" fill="currentColor" viewBox="0 0 24 24"><path d={githubIconPath}/></svg>
         </a>
-        <button id="theme-toggle" class="p-2 rounded-lg text-text-secondary hover:text-text transition-colors" aria-label="Toggle theme">
+        <button id="theme-toggle" class="inline-flex items-center justify-center w-10 h-10 rounded-lg text-text-secondary hover:text-text transition-colors" aria-label="Toggle theme">
           <svg id="sun-icon" class="w-[18px] h-[18px] hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
           </svg>
@@ -39,546 +53,150 @@ const githubIconPath =
   <!-- Hero -->
   <section class="relative overflow-hidden">
     <div class="hero-grid" aria-hidden="true"></div>
-    <div class="relative mx-auto max-w-3xl px-6 pt-16 sm:pt-20 pb-20 text-center">
+    <div class="glow w-[560px] h-[560px] -top-44 left-1/2 -translate-x-1/2" aria-hidden="true"></div>
+    <div class="relative mx-auto max-w-3xl px-6 min-h-[86vh] flex flex-col items-center justify-center text-center pt-24 pb-16">
       <!-- Mascot -->
-      <div class="mb-5">
-        <img src="/crab.svg" alt="PhysiClaw crab mascot" class="w-36 h-36 sm:w-44 sm:h-44 mx-auto drop-shadow-[0_18px_50px_rgba(232,93,38,0.22)]" />
+      <div class="mb-8 load-in" style="animation-delay: 0ms">
+        <img src="/crab.svg" alt="PhysiClaw crab mascot" class="w-28 h-28 sm:w-36 sm:h-36 mx-auto animate-float drop-shadow-[0_24px_60px_rgba(241,95,46,0.28)]" />
       </div>
 
-      <!-- Status chip -->
-      <div class="inline-flex items-center gap-2 mb-6 px-3 py-1 rounded-full border border-border-subtle bg-bg-elevated/60 font-mono text-[11px] tracking-wide text-text-tertiary">
-        <span class="w-1.5 h-1.5 rounded-full bg-green animate-pulse"></span>
-        camera eyes · stylus finger · zero APIs
-      </div>
-
-      <h1 class="text-4xl sm:text-5xl md:text-[3.5rem] font-bold tracking-tight leading-none mb-4 text-accent">
-        PhysiClaw
-      </h1>
-
-      <p class="text-lg sm:text-xl text-accent/70 font-normal mb-5">
-        The AI that physically uses your phone.
+      <p class="load-in mb-6 font-mono text-[11px] tracking-[0.28em] uppercase text-text-tertiary" style="animation-delay: 80ms">
+        An agent that can see and touch
       </p>
 
-      <p class="text-[15px] sm:text-base text-text-secondary max-w-lg mx-auto mb-8 leading-[1.7]">
-        Order food, hail rides, check your bank, reply to messages.<br/>
-        Any app, any phone, no APIs, no OAuth.
+      <h1 class="load-in font-display text-[clamp(2.5rem,11vw,5rem)] font-extrabold tracking-tight leading-[0.95] mb-7" style="animation-delay: 140ms">
+        <span class="text-gradient">PhysiClaw</span>
+      </h1>
+
+      <p class="load-in text-xl sm:text-2xl text-text font-medium tracking-tight mb-5 max-w-xl mx-auto leading-snug" style="animation-delay: 200ms">
+        The AI that interacts with you in the real world.
+      </p>
+
+      <p class="load-in text-[15px] sm:text-base text-text-secondary max-w-md mx-auto mb-10 leading-[1.75]" style="animation-delay: 260ms">
+        Give your agent a phone. It handles the rest.
       </p>
 
       <!-- CTAs -->
-      <div class="flex flex-wrap items-center justify-center gap-3">
-        <a href="https://docs.physiclaw.ai" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-accent text-white font-medium text-sm hover:bg-accent-dim transition-colors shadow-[0_10px_34px_-12px_var(--color-accent)]">
-          Read the docs
-          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      <div class="load-in flex flex-wrap items-center justify-center gap-3" style="animation-delay: 320ms">
+        <a href="https://docs.physiclaw.ai" class="group inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-accent text-white font-medium text-sm hover:bg-accent-dim transition-all shadow-[0_14px_40px_-12px_var(--color-accent)] hover:shadow-[0_18px_50px_-12px_var(--color-accent)] hover:-translate-y-0.5">
+          Get started
+          <svg class="w-4 h-4 transition-transform group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
         </a>
-        <a href="https://github.com/physiclaw/PhysiClaw" target="_blank" rel="noopener" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg border border-border text-text-secondary hover:text-text hover:border-accent/40 font-medium text-sm transition-colors">
+        <a href="https://github.com/physiclaw/PhysiClaw" target="_blank" rel="noopener" class="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-border bg-bg-elevated/40 text-text-secondary hover:text-text hover:border-accent/40 font-medium text-sm transition-all hover:-translate-y-0.5">
           <svg class="w-[18px] h-[18px]" fill="currentColor" viewBox="0 0 24 24"><path d={githubIconPath}/></svg>
           GitHub
         </a>
       </div>
-    </div>
-  </section>
 
-  <!-- Demo — How it works in practice -->
-  <section>
-    <div class="mx-auto max-w-5xl px-6 py-16 sm:py-20">
-      <div class="grid md:grid-cols-2 gap-6">
-
-        <!-- Left: Claude Desktop mockup -->
-        <div class="bg-bg-elevated border border-border rounded-xl overflow-hidden">
-          <!-- Window chrome -->
-          <div class="flex items-center gap-2 px-4 py-3 border-b border-border-subtle">
-            <span class="w-3 h-3 rounded-full bg-[#ff5f57]"></span>
-            <span class="w-3 h-3 rounded-full bg-[#febc2e]"></span>
-            <span class="w-3 h-3 rounded-full bg-[#28c840]"></span>
-            <span class="ml-3 text-text-tertiary text-xs font-mono">Claude Desktop</span>
-          </div>
-          <!-- Chat -->
-          <div class="p-5 space-y-4">
-            <!-- User message -->
-            <div class="flex justify-end">
-              <div class="bg-accent/15 border border-accent/20 rounded-xl rounded-br-sm px-4 py-2.5 max-w-[85%]">
-                <p class="text-sm text-text">Pizza for dinner on Uber Eats</p>
-              </div>
-            </div>
-            <!-- AI response -->
-            <div class="flex justify-start">
-              <div class="bg-bg-card border border-border-subtle rounded-xl rounded-bl-sm px-4 py-3 max-w-[90%]">
-                <p class="text-sm text-text-secondary leading-relaxed">
-                  On it. I'll open Uber Eats on your phone, find a pizza place nearby, and place the order.
-                </p>
-                <div class="mt-3 space-y-2 font-mono text-xs">
-                  <div class="flex items-center gap-2 text-green">
-                    <span>&#x2713;</span>
-                    <span>screenshot_top()</span>
-                  </div>
-                  <div class="flex items-center gap-2 text-green">
-                    <span>&#x2713;</span>
-                    <span>move("down-right", "large")</span>
-                  </div>
-                  <div class="flex items-center gap-2 text-green">
-                    <span>&#x2713;</span>
-                    <span>tap() — Uber Eats icon</span>
-                  </div>
-                  <div class="flex items-center gap-2 text-green">
-                    <span>&#x2713;</span>
-                    <span>screenshot_top()</span>
-                  </div>
-                  <div class="flex items-center gap-2 text-yellow">
-                    <span class="inline-block w-2 h-2 rounded-full bg-yellow animate-pulse"></span>
-                    <span class="text-text-tertiary">searching for pizza...</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Right: Robot arm + phone illustration -->
-        <div class="flex items-center justify-center">
-          <img src="/arm-phone.svg" alt="Robot arm touching phone screen" class="w-full max-w-md" />
-        </div>
-
-      </div>
-
-      <p class="text-center text-xs text-text-tertiary mt-6">
-        The entire flow runs autonomously. You just watch.
-      </p>
-    </div>
-  </section>
-
-  <!-- The Loop — ASCII diagram -->
-  <section>
-    <div class="mx-auto max-w-5xl px-6 py-6">
-      <div class="bg-bg-elevated border border-border rounded-xl p-6 sm:p-8 overflow-x-auto">
-        <div class="flex items-center gap-2 mb-4">
-          <span class="w-3 h-3 rounded-full bg-[#ff5f57]"></span>
-          <span class="w-3 h-3 rounded-full bg-[#febc2e]"></span>
-          <span class="w-3 h-3 rounded-full bg-[#28c840]"></span>
-          <span class="ml-3 text-text-tertiary font-mono text-xs">the loop</span>
-        </div>
-        <pre class="font-mono text-accent/90 ascii-diagram whitespace-pre"><code>{` Top Camera ──→ AI Agent ──→ 3-Axis Arm ──→ Side Camera ──→ Aligned?
- (read screen)  (decide)     (move stylus)   (check pos)     │
-      ▲                                                  Yes │ No
-      │                                                   │  │
-      │         Touch Phone ◄─────────────────────────────┘  │
-      │              │                                       │
-      └──────────────┘ (next action)         adjust & retry ◄┘`}</code></pre>
-      </div>
+      <!-- Scroll cue -->
+      <a href="#how" aria-label="Scroll to how it works" class="load-in hidden sm:flex absolute bottom-8 left-1/2 -translate-x-1/2 text-text-tertiary hover:text-accent transition-colors" style="animation-delay: 460ms">
+        <svg class="w-5 h-5 animate-bounce" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+      </a>
     </div>
   </section>
 
   <!-- How It Works -->
-  <section id="how">
-    <div class="mx-auto max-w-5xl px-6 py-20 sm:py-28">
-      <div class="flex items-center gap-3 mb-12">
-        <span class="text-accent font-mono text-sm">&gt;</span>
-        <h2 class="text-2xl sm:text-3xl font-bold tracking-tight">How it works</h2>
+  <section id="how" class="relative">
+    <div class="mx-auto max-w-6xl px-6 py-24 sm:py-32">
+      <div class="reveal max-w-2xl mb-16">
+        <p class="font-mono text-xs tracking-[0.2em] uppercase text-accent mb-4">// How it works</p>
+        <h2 class="font-display text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight mb-5 leading-[1.05]">An agent that uses a phone like you do.</h2>
+        <p class="text-text-secondary text-base sm:text-lg leading-relaxed">PhysiClaw gives your agent a body — a hand and an eye. A gantry moves across the plane, a stylus taps the screen, and a camera watches what happens.</p>
       </div>
 
-      <div class="grid sm:grid-cols-2 gap-4">
-        <div class="rounded-xl border border-border bg-bg-card p-6">
-          <div class="flex items-center gap-3 mb-3">
-            <span class="flex items-center justify-center w-8 h-8 rounded-lg bg-accent/10 text-accent font-mono text-sm font-bold">1</span>
-            <h3 class="font-semibold text-[15px]">Park & Screenshot</h3>
+      <div class="grid sm:grid-cols-2 gap-5 sm:gap-6">
+        {steps.map((step, i) => (
+          <div class="reveal card group rounded-2xl p-7 sm:p-8 flex items-start gap-5" style={`transition-delay: ${i * 80}ms`}>
+            <div class="shrink-0 inline-flex items-center justify-center w-12 h-12 rounded-xl bg-accent/10 text-accent ring-1 ring-accent/15 transition-colors group-hover:bg-accent/15">
+              <svg class="w-[22px] h-[22px]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" set:html={step.icon} />
+            </div>
+            <div>
+              <h3 class="font-display font-bold text-lg sm:text-xl mb-2 tracking-tight">{step.title}</h3>
+              <p class="text-text-secondary text-sm sm:text-[15px] leading-relaxed">{step.body}</p>
+            </div>
           </div>
-          <p class="text-text-secondary text-sm leading-relaxed">
-            Stylus retracts out of frame. Top camera takes a clean screenshot. The AI sees exactly what's on your phone screen.
-          </p>
-        </div>
-
-        <div class="rounded-xl border border-border bg-bg-card p-6">
-          <div class="flex items-center gap-3 mb-3">
-            <span class="flex items-center justify-center w-8 h-8 rounded-lg bg-accent/10 text-accent font-mono text-sm font-bold">2</span>
-            <h3 class="font-semibold text-[15px]">AI Decides</h3>
-          </div>
-          <p class="text-text-secondary text-sm leading-relaxed">
-            The agent (Claude, GPT, etc.) analyzes the screen and picks a direction and distance — like "move down-right, large" — no pixel coordinates needed.
-          </p>
-        </div>
-
-        <div class="rounded-xl border border-border bg-bg-card p-6">
-          <div class="flex items-center gap-3 mb-3">
-            <span class="flex items-center justify-center w-8 h-8 rounded-lg bg-accent/10 text-accent font-mono text-sm font-bold">3</span>
-            <h3 class="font-semibold text-[15px]">Move & Verify</h3>
-          </div>
-          <p class="text-text-secondary text-sm leading-relaxed">
-            The arm moves the stylus. Side camera checks alignment from 45°. Not aligned? The AI adjusts. Aligned? It taps.
-          </p>
-        </div>
-
-        <div class="rounded-xl border border-border bg-bg-card p-6">
-          <div class="flex items-center gap-3 mb-3">
-            <span class="flex items-center justify-center w-8 h-8 rounded-lg bg-accent/10 text-accent font-mono text-sm font-bold">4</span>
-            <h3 class="font-semibold text-[15px]">Touch & Repeat</h3>
-          </div>
-          <p class="text-text-secondary text-sm leading-relaxed">
-            Stylus touches the screen, then retracts. Top camera verifies the result. The loop continues for the next action.
-          </p>
-        </div>
-      </div>
-
-      <!-- Two cameras explanation -->
-      <div class="mt-8 grid sm:grid-cols-3 gap-4">
-        <div class="rounded-xl border border-border-subtle bg-bg-elevated p-5">
-          <div class="text-lg mb-2">&#x1F4F7;</div>
-          <h4 class="font-medium text-sm mb-1">Top Camera</h4>
-          <p class="text-text-tertiary text-xs leading-relaxed">Looks straight down at the screen — reads what's on it</p>
-        </div>
-        <div class="rounded-xl border border-border-subtle bg-bg-elevated p-5">
-          <div class="text-lg mb-2">&#x1F4D0;</div>
-          <h4 class="font-medium text-sm mb-1">Side Camera</h4>
-          <p class="text-text-tertiary text-xs leading-relaxed">Views from ~45° — checks stylus tip position before tapping</p>
-        </div>
-        <div class="rounded-xl border border-border-subtle bg-bg-elevated p-5">
-          <div class="text-lg mb-2">&#x270F;&#xFE0F;</div>
-          <h4 class="font-medium text-sm mb-1">Capacitive Stylus</h4>
-          <p class="text-text-tertiary text-xs leading-relaxed">Moves X/Y to reach any point, up/down (Z) to touch or release</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Why -->
-  <section id="why">
-    <div class="mx-auto max-w-5xl px-6 py-20 sm:py-28">
-      <div class="flex items-center gap-3 mb-6">
-        <span class="text-accent font-mono text-sm">&gt;</span>
-        <h2 class="text-2xl sm:text-3xl font-bold tracking-tight">Why PhysiClaw</h2>
-      </div>
-
-      <p class="text-text-secondary text-lg max-w-2xl mb-12 leading-relaxed">
-        Today's AI agents can control your computer — but they hit walls everywhere.
-      </p>
-
-      <div class="grid sm:grid-cols-2 gap-6 mb-12">
-        <div class="space-y-3">
-          <h3 class="text-xs font-mono text-text-tertiary uppercase tracking-widest mb-4">The Problem</h3>
-          <div class="flex items-start gap-3 text-sm text-text-secondary">
-            <span class="text-red-400 mt-0.5 shrink-0">&#x2715;</span>
-            <span>Want to order food? Need a delivery API + OAuth.</span>
-          </div>
-          <div class="flex items-start gap-3 text-sm text-text-secondary">
-            <span class="text-red-400 mt-0.5 shrink-0">&#x2715;</span>
-            <span>Want to check your bank? Blocked by data walls.</span>
-          </div>
-          <div class="flex items-start gap-3 text-sm text-text-secondary">
-            <span class="text-red-400 mt-0.5 shrink-0">&#x2715;</span>
-            <span>Want to book a ride? Another service integration.</span>
-          </div>
-          <div class="flex items-start gap-3 text-sm text-text-secondary">
-            <span class="text-red-400 mt-0.5 shrink-0">&#x2715;</span>
-            <span>Every new app = new OAuth, new API, new setup.</span>
-          </div>
-        </div>
-
-        <div class="space-y-3">
-          <h3 class="text-xs font-mono text-text-tertiary uppercase tracking-widest mb-4">The PhysiClaw Way</h3>
-          <div class="flex items-start gap-3 text-sm text-text-secondary">
-            <span class="text-green mt-0.5 shrink-0">&#x2713;</span>
-            <span>One setup. Every app. Any phone.</span>
-          </div>
-          <div class="flex items-start gap-3 text-sm text-text-secondary">
-            <span class="text-green mt-0.5 shrink-0">&#x2713;</span>
-            <span>No API keys. No OAuth. No integrations.</span>
-          </div>
-          <div class="flex items-start gap-3 text-sm text-text-secondary">
-            <span class="text-green mt-0.5 shrink-0">&#x2713;</span>
-            <span>Invisible to apps — just a finger on glass.</span>
-          </div>
-          <div class="flex items-start gap-3 text-sm text-text-secondary">
-            <span class="text-green mt-0.5 shrink-0">&#x2713;</span>
-            <span>iOS and Android. No jailbreak needed.</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="rounded-xl border border-accent/20 bg-accent-glow p-6 sm:p-8">
-        <p class="text-[15px] leading-relaxed">
-          <strong class="text-accent">The insight:</strong>
-          <span class="text-text-secondary"> Instead of building software bridges to every service, give the AI agent physical presence. A camera sees the screen. A robotic finger taps it. No app can detect or block it — because to the phone, it's just a finger.</span>
-        </p>
-      </div>
-    </div>
-  </section>
-
-  <!-- Architecture -->
-  <section>
-    <div class="mx-auto max-w-5xl px-6 py-20 sm:py-28">
-      <div class="flex items-center gap-3 mb-12">
-        <span class="text-accent font-mono text-sm">&gt;</span>
-        <h2 class="text-2xl sm:text-3xl font-bold tracking-tight">System Architecture</h2>
-      </div>
-
-      <div class="bg-bg-elevated border border-border rounded-xl p-6 sm:p-8 overflow-x-auto">
-        <div class="flex items-center gap-2 mb-4">
-          <span class="w-3 h-3 rounded-full bg-[#ff5f57]"></span>
-          <span class="w-3 h-3 rounded-full bg-[#febc2e]"></span>
-          <span class="w-3 h-3 rounded-full bg-[#28c840]"></span>
-          <span class="ml-3 text-text-tertiary font-mono text-xs">architecture.txt</span>
-        </div>
-        <pre class="font-mono text-green/80 ascii-diagram whitespace-pre"><code>{`┌───────────────────────────────────────┐
-│           AI Agent (Brain)            │
-│  Claude Desktop / OpenClaw / etc.     │
-│  Sees screen → decides → calls tools  │
-└──────────────────┬────────────────────┘
-                   │ MCP Protocol
-                   ▼
-┌───────────────────────────────────────┐
-│     PhysiClaw MCP Server (Python)     │
-│                                       │
-│  Tools:                               │
-│   · screenshot_top   (top camera)     │
-│   · screenshot_side  (side camera)    │
-│   · move             (X/Y plane)      │
-│   · tap / swipe      (Z down + move)  │
-│   · park             (retract)        │
-└──────────┬────────────────┬───────────┘
-           │                │
-     USB Cameras      USB Serial (GRBL)
-           │                │
-           ▼                ▼
-    ┌────────────┐   ┌───────────────┐
-    │ Top Camera │   │ GRBL Board    │
-    │ (screen)   │   │ (embedded)    │
-    ├────────────┤   │ X/Y gantry    │
-    │ Side Camera│   │ Z stylus      │
-    │ (stylus)   │   └──────┬────────┘
-    └────────────┘          │ touch
-                            ▼
-                   ┌─────────────────┐
-                   │  Phone          │
-                   │  (unlocked)     │
-                   └─────────────────┘`}</code></pre>
-      </div>
-
-      <div class="mt-6 flex flex-wrap gap-2">
-        {['Python 3.11+', 'MCP Protocol', 'GRBL/grblHAL', 'OpenCV', 'pyserial', 'USB Serial'].map((tech) => (
-          <span class="px-3 py-1 rounded-full text-xs font-mono text-text-tertiary border border-border-subtle bg-bg-elevated">
-            {tech}
-          </span>
         ))}
       </div>
     </div>
   </section>
 
-  <!-- Hardware / BOM -->
-  <section id="hardware">
-    <div class="mx-auto max-w-5xl px-6 py-20 sm:py-28">
-      <div class="flex items-center gap-3 mb-4">
-        <span class="text-accent font-mono text-sm">&gt;</span>
-        <h2 class="text-2xl sm:text-3xl font-bold tracking-tight">Hardware</h2>
-      </div>
-      <p class="text-text-secondary text-sm mb-10">Everything you need to build one. Total cost: <strong class="text-text">~$127</strong>.</p>
-
-      <div class="rounded-xl border border-border overflow-hidden">
-        <table class="w-full text-sm">
-          <thead>
-            <tr class="bg-bg-elevated text-left">
-              <th class="px-5 py-3 font-medium text-text-tertiary text-xs uppercase tracking-wider">Component</th>
-              <th class="px-5 py-3 font-medium text-text-tertiary text-xs uppercase tracking-wider hidden sm:table-cell">Item</th>
-              <th class="px-5 py-3 font-medium text-text-tertiary text-xs uppercase tracking-wider text-right">Price</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-border-subtle">
-            <tr class="hover:bg-bg-elevated/50 transition-colors">
-              <td class="px-5 py-3 font-medium text-text whitespace-nowrap">GRBL Arm</td>
-              <td class="px-5 py-3 text-text-secondary hidden sm:table-cell">Paixi pen plotter P25 (X/Y gantry + Z servo)</td>
-              <td class="px-5 py-3 text-text-secondary text-right font-mono">~$80</td>
-            </tr>
-            <tr class="hover:bg-bg-elevated/50 transition-colors">
-              <td class="px-5 py-3 font-medium text-text whitespace-nowrap">Top Camera</td>
-              <td class="px-5 py-3 text-text-secondary hidden sm:table-cell">UGREEN 1080P USB camera, fixed focus</td>
-              <td class="px-5 py-3 text-text-secondary text-right font-mono">~$14</td>
-            </tr>
-            <tr class="hover:bg-bg-elevated/50 transition-colors">
-              <td class="px-5 py-3 font-medium text-text whitespace-nowrap">Side Camera</td>
-              <td class="px-5 py-3 text-text-secondary hidden sm:table-cell">UGREEN 1080P USB camera (same)</td>
-              <td class="px-5 py-3 text-text-secondary text-right font-mono">~$14</td>
-            </tr>
-            <tr class="hover:bg-bg-elevated/50 transition-colors">
-              <td class="px-5 py-3 font-medium text-text whitespace-nowrap">Stylus</td>
-              <td class="px-5 py-3 text-text-secondary hidden sm:table-cell">Capacitive stylus, conductive fiber tip 8-10mm</td>
-              <td class="px-5 py-3 text-text-secondary text-right font-mono">~$1.50</td>
-            </tr>
-            <tr class="hover:bg-bg-elevated/50 transition-colors">
-              <td class="px-5 py-3 font-medium text-text whitespace-nowrap">Camera Mounts</td>
-              <td class="px-5 py-3 text-text-secondary hidden sm:table-cell">Gooseneck desk clamp, metal, 50cm (x2)</td>
-              <td class="px-5 py-3 text-text-secondary text-right font-mono">~$4</td>
-            </tr>
-            <tr class="hover:bg-bg-elevated/50 transition-colors">
-              <td class="px-5 py-3 font-medium text-text whitespace-nowrap">Phone Mount</td>
-              <td class="px-5 py-3 text-text-secondary hidden sm:table-cell">Anti-slip pad + L-shaped blocks</td>
-              <td class="px-5 py-3 text-text-secondary text-right font-mono">~$1.20</td>
-            </tr>
-            <tr class="hover:bg-bg-elevated/50 transition-colors">
-              <td class="px-5 py-3 font-medium text-text whitespace-nowrap">USB Hub</td>
-              <td class="px-5 py-3 text-text-secondary hidden sm:table-cell">USB 3.0 Hub</td>
-              <td class="px-5 py-3 text-text-secondary text-right font-mono">~$13</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </section>
-
-  <!-- Quick Start -->
-  <section>
-    <div class="mx-auto max-w-5xl px-6 py-20 sm:py-28">
-      <div class="flex items-center gap-3 mb-12">
-        <span class="text-accent font-mono text-sm">&gt;</span>
-        <h2 class="text-2xl sm:text-3xl font-bold tracking-tight">Quick Start</h2>
-      </div>
-
-      <div class="space-y-4 max-w-2xl">
-        <div class="bg-bg-elevated border border-border rounded-xl p-5">
-          <div class="text-xs font-mono text-text-tertiary mb-3">Install dependencies</div>
-          <pre class="font-mono text-sm text-green"><code>pip install pyserial opencv-python mcp</code></pre>
+  <!-- Why -->
+  <section id="why" class="relative overflow-hidden">
+    <div class="glow w-[520px] h-[520px] top-1/4 -right-52" aria-hidden="true"></div>
+    <div class="relative mx-auto max-w-6xl px-6 py-24 sm:py-32">
+      <div class="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+        <!-- Argument -->
+        <div class="reveal">
+          <p class="font-mono text-xs tracking-[0.2em] uppercase text-accent mb-4">// Why PhysiClaw</p>
+          <h2 class="font-display text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight mb-6 leading-[1.05]">An agent confined to a computer isn't enough.<br class="hidden sm:block" /> It needs a body.</h2>
+          <p class="text-text-secondary text-base sm:text-lg leading-relaxed mb-6">
+            The services you live in weren't built for your agent. WhatsApp, WeChat, Amazon, Taobao, Uber, Didi, Airbnb — their APIs are gated. An agent that can only call APIs is locked out of the apps that matter most.
+          </p>
+          <p class="text-text-secondary text-base sm:text-lg leading-relaxed">
+            A body changes that. Tapping the phone like you do, it gets in everywhere. To the phone, it's a finger on screen. The data wall can only be broken physically.
+          </p>
         </div>
 
-        <div class="bg-bg-elevated border border-border rounded-xl p-5">
-          <div class="text-xs font-mono text-text-tertiary mb-3">Clone the repo</div>
-          <pre class="font-mono text-sm text-green"><code>git clone https://github.com/physiclaw/PhysiClaw.git
-cd PhysiClaw</code></pre>
-        </div>
-
-        <div class="bg-bg-elevated border border-border rounded-xl p-5">
-          <div class="text-xs font-mono text-text-tertiary mb-3">Project structure</div>
-          <pre class="font-mono text-sm text-text-secondary"><code><span class="text-accent">physiclaw/</span>
-├── physiclaw_server.py   <span class="text-text-tertiary"># MCP Server entry point</span>
-├── hand.py               <span class="text-text-tertiary"># Serial G-code control</span>
-├── eyes.py               <span class="text-text-tertiary"># USB camera capture</span>
-└── config.py             <span class="text-text-tertiary"># Configuration constants</span></code></pre>
+        <!-- The PhysiClaw way -->
+        <div class="reveal card rounded-3xl p-8 sm:p-10" style="transition-delay: 100ms">
+          <h3 class="font-mono text-[11px] tracking-[0.2em] uppercase text-accent mb-8">The PhysiClaw way</h3>
+          <ul class="space-y-6">
+            {solutions.map((s) => (
+              <li class="flex items-start gap-4 text-[15px] sm:text-base text-text">
+                <span class="mt-px shrink-0 inline-flex items-center justify-center w-6 h-6 rounded-full bg-accent/10 text-accent ring-1 ring-accent/20">
+                  <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+                </span>
+                <span class="leading-snug">{s}</span>
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Use Cases -->
-  <section id="cases">
-    <div class="mx-auto max-w-5xl px-6 py-20 sm:py-28">
-      <div class="flex items-center gap-3 mb-4">
-        <span class="text-accent font-mono text-sm">&gt;</span>
-        <h2 class="text-2xl sm:text-3xl font-bold tracking-tight">What it can do</h2>
-      </div>
-      <p class="text-text-secondary text-sm mb-10">Any app, any phone, iOS or Android.</p>
-
-      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
-        <div class="flex items-start gap-3 rounded-xl border border-border bg-bg-card p-4">
-          <span class="text-lg shrink-0 mt-0.5">&#x1F35C;</span>
-          <div>
-            <div class="text-sm font-medium text-text">Order food delivery</div>
-            <div class="text-xs text-text-tertiary mt-0.5">Meituan, Uber Eats</div>
-          </div>
-        </div>
-        <div class="flex items-start gap-3 rounded-xl border border-border bg-bg-card p-4">
-          <span class="text-lg shrink-0 mt-0.5">&#x1F697;</span>
-          <div>
-            <div class="text-sm font-medium text-text">Hail a ride</div>
-            <div class="text-xs text-text-tertiary mt-0.5">Didi, Uber</div>
-          </div>
-        </div>
-        <div class="flex items-start gap-3 rounded-xl border border-border bg-bg-card p-4">
-          <span class="text-lg shrink-0 mt-0.5">&#x1F6D2;</span>
-          <div>
-            <div class="text-sm font-medium text-text">Browse & shop</div>
-            <div class="text-xs text-text-tertiary mt-0.5">Taobao, Amazon</div>
-          </div>
-        </div>
-        <div class="flex items-start gap-3 rounded-xl border border-border bg-bg-card p-4">
-          <span class="text-lg shrink-0 mt-0.5">&#x1F4CA;</span>
-          <div>
-            <div class="text-sm font-medium text-text">Check weather, news, stocks</div>
-            <div class="text-xs text-text-tertiary mt-0.5">Any app</div>
-          </div>
-        </div>
-        <div class="flex items-start gap-3 rounded-xl border border-border bg-bg-card p-4">
-          <span class="text-lg shrink-0 mt-0.5">&#x1F4AC;</span>
-          <div>
-            <div class="text-sm font-medium text-text">Read & reply to messages</div>
-            <div class="text-xs text-text-tertiary mt-0.5">WeChat, WhatsApp</div>
-          </div>
-        </div>
-        <div class="flex items-start gap-3 rounded-xl border border-border bg-bg-card p-4">
-          <span class="text-lg shrink-0 mt-0.5">&#x1F4F1;</span>
-          <div>
-            <div class="text-sm font-medium text-text">Scroll social media</div>
-            <div class="text-xs text-text-tertiary mt-0.5">TikTok, Instagram</div>
-          </div>
-        </div>
-        <div class="flex items-start gap-3 rounded-xl border border-border bg-bg-card p-4">
-          <span class="text-lg shrink-0 mt-0.5">&#x2705;</span>
-          <div>
-            <div class="text-sm font-medium text-text">App daily check-ins</div>
-            <div class="text-xs text-text-tertiary mt-0.5">Collect rewards</div>
-          </div>
-        </div>
-        <div class="flex items-start gap-3 rounded-xl border border-border bg-bg-card p-4">
-          <span class="text-lg shrink-0 mt-0.5">&#x23F0;</span>
-          <div>
-            <div class="text-sm font-medium text-text">Set alarms & reminders</div>
-            <div class="text-xs text-text-tertiary mt-0.5">Clock, Calendar</div>
-          </div>
-        </div>
-        <div class="flex items-start gap-3 rounded-xl border border-border bg-bg-card p-4">
-          <span class="text-lg shrink-0 mt-0.5">&#x1F4F8;</span>
-          <div>
-            <div class="text-sm font-medium text-text">Take & send screenshots</div>
-            <div class="text-xs text-text-tertiary mt-0.5">Any app</div>
+  <!-- Closing CTA -->
+  <section class="relative">
+    <div class="mx-auto max-w-5xl px-6 pb-24 sm:pb-32">
+      <div class="reveal relative rounded-3xl border border-accent/25 overflow-hidden px-6 py-16 sm:px-12 sm:py-20 text-center" style="background: linear-gradient(140deg, var(--color-accent-glow), transparent 65%);">
+        <div class="glow w-[420px] h-[420px] -top-32 left-1/2 -translate-x-1/2" aria-hidden="true"></div>
+        <div class="relative">
+          <h2 class="font-display text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight leading-[1.05] mb-4">
+            Build your own <span class="text-gradient">PhysiClaw</span> agent.
+          </h2>
+          <p class="text-text-secondary text-base sm:text-lg max-w-xl mx-auto mb-9 leading-relaxed">
+            Both the hardware and the agent are open source. Buy the parts, assemble your own, and let your personal assistant work for you.
+          </p>
+          <div class="flex flex-wrap items-center justify-center gap-3">
+            <a href="https://docs.physiclaw.ai" class="group inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-accent text-white font-medium text-sm hover:bg-accent-dim transition-all shadow-[0_14px_40px_-12px_var(--color-accent)] hover:shadow-[0_18px_50px_-12px_var(--color-accent)] hover:-translate-y-0.5">
+              Get started
+              <svg class="w-4 h-4 transition-transform group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </a>
+            <a href="https://github.com/physiclaw/PhysiClaw" target="_blank" rel="noopener" class="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-border bg-bg-elevated/40 text-text-secondary hover:text-text hover:border-accent/40 font-medium text-sm transition-all hover:-translate-y-0.5">
+              <svg class="w-[18px] h-[18px]" fill="currentColor" viewBox="0 0 24 24"><path d={githubIconPath}/></svg>
+              Star on GitHub
+            </a>
           </div>
         </div>
       </div>
     </div>
-  </section>
-
-  <!-- Gestures -->
-  <section>
-    <div class="mx-auto max-w-5xl px-6 py-20 sm:py-28">
-      <div class="flex items-center gap-3 mb-12">
-        <span class="text-accent font-mono text-sm">&gt;</span>
-        <h2 class="text-2xl sm:text-3xl font-bold tracking-tight">Gestures</h2>
-      </div>
-
-      <div class="grid sm:grid-cols-2 gap-4 max-w-3xl">
-        <div class="rounded-xl border border-border-subtle bg-bg-elevated p-5">
-          <h4 class="font-semibold text-sm mb-1">Single Tap</h4>
-          <p class="text-text-secondary text-xs mb-3">Move to target &rarr; down 50-100ms &rarr; up</p>
-          <code class="text-[11px] font-mono text-accent/70 bg-bg px-2 py-1 rounded">G0 &rarr; M3 S12 &rarr; G4 P0.05 &rarr; M3 S0</code>
-        </div>
-        <div class="rounded-xl border border-border-subtle bg-bg-elevated p-5">
-          <h4 class="font-semibold text-sm mb-1">Long Press</h4>
-          <p class="text-text-secondary text-xs mb-3">Move to target &rarr; down 800ms &rarr; up</p>
-          <code class="text-[11px] font-mono text-accent/70 bg-bg px-2 py-1 rounded">G0 &rarr; M3 S12 &rarr; G4 P0.8 &rarr; M3 S0</code>
-        </div>
-        <div class="rounded-xl border border-border-subtle bg-bg-elevated p-5">
-          <h4 class="font-semibold text-sm mb-1">Swipe</h4>
-          <p class="text-text-secondary text-xs mb-3">Down at start &rarr; linear move &rarr; up at end</p>
-          <code class="text-[11px] font-mono text-accent/70 bg-bg px-2 py-1 rounded">M3 S12 &rarr; G1 F3000 &rarr; M3 S0</code>
-        </div>
-        <div class="rounded-xl border border-border-subtle bg-bg-elevated p-5">
-          <h4 class="font-semibold text-sm mb-1">Double Tap</h4>
-          <p class="text-text-secondary text-xs mb-3">Two taps with &lt;300ms interval</p>
-          <code class="text-[11px] font-mono text-accent/70 bg-bg px-2 py-1 rounded">tap &rarr; G4 P0.1 &rarr; tap</code>
-        </div>
-      </div>
-    </div>
-  </section>
-
   </section>
 
   <!-- Footer -->
-  <footer>
-    <div class="mx-auto max-w-5xl px-6 py-12">
-      <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
-        <div class="flex items-center gap-2 text-text-secondary text-sm">
+  <footer class="relative border-t border-border-subtle">
+    <div class="mx-auto max-w-6xl px-6 py-12">
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-5">
+        <div class="flex items-center gap-2.5 text-text-secondary text-sm">
           <img src="/favicon.svg" alt="" class="w-5 h-5" />
-          <span>PhysiClaw</span>
-          <span class="text-text-tertiary">&middot;</span>
-          <span class="text-text-tertiary">MIT License</span>
+          <span class="font-display font-bold text-text">PhysiClaw</span>
+          <span class="text-text-tertiary">·</span>
+          <span class="text-text-tertiary">&copy; 2026 · MIT License</span>
         </div>
-        <div class="flex items-center gap-4 text-sm text-text-tertiary">
+        <div class="flex items-center gap-5 text-sm text-text-tertiary">
+          <a href="#how" class="hover:text-text transition-colors">How it works</a>
+          <a href="#why" class="hover:text-text transition-colors">Why</a>
+          <a href="https://docs.physiclaw.ai" class="hover:text-text transition-colors">Docs</a>
           <a href="https://github.com/physiclaw/PhysiClaw" target="_blank" rel="noopener" class="hover:text-text transition-colors">GitHub</a>
-          <span>&middot;</span>
-          <span>physiclaw.ai</span>
         </div>
       </div>
     </div>

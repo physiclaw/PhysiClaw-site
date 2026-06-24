@@ -1,0 +1,6 @@
+---
+// Bilingual text. Renders the English and Chinese strings as sibling spans;
+// the active one is shown via CSS based on html[data-lang]. Populate `zh` later.
+const { en, zh } = Astro.props;
+---
+<span class="lang-en">{en}</span><span class="lang-zh">{zh}</span>

@@ -2,23 +2,53 @@
 import Layout from '../layouts/Layout.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import T from '../components/T.astro';
 
 // GitHub mark — used in the hero and closing CTAs.
 const githubIconPath =
   'M12 .5C5.37.5 0 5.78 0 12.29c0 5.2 3.44 9.6 8.21 11.16.6.11.82-.25.82-.56v-2c-3.34.71-4.04-1.59-4.04-1.59-.55-1.37-1.34-1.74-1.34-1.74-1.09-.74.08-.72.08-.72 1.21.08 1.84 1.22 1.84 1.22 1.07 1.8 2.81 1.28 3.5.98.11-.76.42-1.28.76-1.58-2.67-.3-5.47-1.31-5.47-5.83 0-1.29.47-2.34 1.23-3.17-.12-.3-.53-1.52.12-3.16 0 0 1.01-.32 3.3 1.21a11.6 11.6 0 016 0c2.29-1.53 3.3-1.21 3.3-1.21.65 1.64.24 2.86.12 3.16.77.83 1.23 1.88 1.23 3.17 0 4.53-2.81 5.53-5.49 5.82.43.36.81 1.08.81 2.18v3.24c0 .31.21.68.82.56A12.01 12.01 0 0024 12.29C24 5.78 18.63.5 12 .5z';
 
+// Bilingual content. `zh` values are English placeholders — populate later.
 const steps = [
-  { icon: '<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>', title: 'Just Text it', body: 'Message PhysiClaw from any chat app, like texting a friend. With its own phone, it reads and replies on its own — no OAuth, no API to wire up.' },
-  { icon: '<path d="m9 9 5 12 1.8-5.2L21 14Z"/><path d="M7.2 2.2 8 5.1"/><path d="m5.1 8-2.9-.8"/><path d="M14 4.1 12 6"/><path d="m6 12-1.9 2"/>', title: 'Tap & Swipe', body: "It works the phone with a stylus — the same taps, swipes, and scrolls you'd use. It opens the right app for the task and navigates by hand, no special access required." },
-  { icon: '<path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/>', title: 'Eyes on the Screen', body: 'A camera is its eye. After every action it checks what changed — did it land, did the job get done — and glances back now and then so nothing slips by.' },
-  { icon: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/>', title: 'Safety First', body: 'It never runs commands on your computer or touches your files, and keeps only the memory and cron jobs it needs. Its whole world is the phone in front of it.' },
+  {
+    icon: '<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>',
+    title: { en: 'Just Text it', zh: '一句话，就够了' },
+    body: {
+      en: 'Message PhysiClaw from any chat app, like texting a friend. With its own phone, it reads and replies on its own — no OAuth, no API to wire up.',
+      zh: '在任意聊天软件里给它发消息，就像和朋友聊天。它有自己的手机，自己读，自己回——无需授权，无需接口。',
+    },
+  },
+  {
+    icon: '<path d="m9 9 5 12 1.8-5.2L21 14Z"/><path d="M7.2 2.2 8 5.1"/><path d="m5.1 8-2.9-.8"/><path d="M14 4.1 12 6"/><path d="m6 12-1.9 2"/>',
+    title: { en: 'Tap & Swipe', zh: '点按滑动，分毫不差' },
+    body: {
+      en: "It works the phone with a stylus — the same taps, swipes, and scrolls you'd use. It opens the right app for the task and navigates by hand, no special access required.",
+      zh: '它握着触控笔操作手机——点按、滑动、翻页，与你的指尖别无两样。该用哪个 App，它自己打开，亲手操作，无需任何特殊权限。',
+    },
+  },
+  {
+    icon: '<path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/>',
+    title: { en: 'Eyes on the Screen', zh: '一眼不离，了然于心' },
+    body: {
+      en: 'A camera is its eye. After every action it checks what changed — did it land, did the job get done — and glances back now and then so nothing slips by.',
+      zh: '摄像头，就是它的眼睛。每动一步，它都注视屏幕——点中了吗，完成了吗——还会不时回看，绝不放过一处细节。',
+    },
+  },
+  {
+    icon: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/>',
+    title: { en: 'Safety First', zh: '安全，始终如一' },
+    body: {
+      en: 'It never runs commands on your computer or touches your files, and keeps only the memory and cron jobs it needs. Its whole world is the phone in front of it.',
+      zh: '它从不在你的电脑上运行任何命令，也不碰你的任何文件，只保留必需的记忆与定时任务。它的整个世界，就是眼前这一部手机。',
+    },
+  },
 ];
 
 const solutions = [
-  'No APIs. No OAuth. No jailbreak.',
-  'One setup. Every app in the phone.',
-  'Works like a human — no robot trace to detect.',
-  "Does anything you'd do on your phone.",
+  { en: 'No APIs. No OAuth. No jailbreak.', zh: '不靠接口，不用授权，无需越狱。' },
+  { en: 'One setup. Every app in the phone.', zh: '一次设置，畅享每个 App。' },
+  { en: 'Works like a human — no robot trace to detect.', zh: '举止如人，了无痕迹。' },
+  { en: "Does anything you'd do on your phone.", zh: '凡你手机能做之事，它皆能为。' },
 ];
 ---
 
@@ -36,7 +66,7 @@ const solutions = [
       </div>
 
       <p class="load-in mb-6 font-mono text-[11px] tracking-[0.28em] uppercase text-text-tertiary" style="animation-delay: 80ms">
-        An agent that can see and touch
+        <T en="An agent that can see and touch" zh="看得见，摸得着" />
       </p>
 
       <h1 class="load-in font-display text-[clamp(2.5rem,11vw,5rem)] font-extrabold tracking-tight leading-[0.95] mb-7" style="animation-delay: 140ms">
@@ -44,17 +74,17 @@ const solutions = [
       </h1>
 
       <p class="load-in text-xl sm:text-2xl text-text font-medium tracking-tight mb-5 max-w-xl mx-auto leading-snug" style="animation-delay: 200ms">
-        The AI that interacts with you in the real world.
+        <T en="The AI that interacts with you in the real world." zh="在真实世界与你互动的智能体" />
       </p>
 
       <p class="load-in text-[15px] sm:text-base text-text-secondary max-w-md mx-auto mb-10 leading-[1.75]" style="animation-delay: 260ms">
-        Give your agent a phone. It handles the rest.
+        <T en="Give your agent a phone. It handles the rest." zh="给它一部手机，剩下的它来办。" />
       </p>
 
       <!-- CTAs -->
       <div class="load-in flex flex-wrap items-center justify-center gap-3" style="animation-delay: 320ms">
         <a href="https://docs.physiclaw.ai" class="group inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-accent text-white font-medium text-sm hover:bg-accent-dim transition-all shadow-[0_14px_40px_-12px_var(--color-accent)] hover:shadow-[0_18px_50px_-12px_var(--color-accent)] hover:-translate-y-0.5">
-          Get started
+          <T en="Get started" zh="开始使用" />
           <svg class="w-4 h-4 transition-transform group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
         </a>
         <a href="https://github.com/physiclaw/PhysiClaw" target="_blank" rel="noopener" class="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-border bg-bg-elevated/40 text-text-secondary hover:text-text hover:border-accent/40 font-medium text-sm transition-all hover:-translate-y-0.5">
@@ -74,9 +104,16 @@ const solutions = [
   <section id="how" class="relative">
     <div class="mx-auto max-w-6xl px-6 py-24 sm:py-32">
       <div class="reveal max-w-2xl mb-16">
-        <p class="font-mono text-xs tracking-[0.2em] uppercase text-accent mb-4">// How it works</p>
-        <h2 class="font-display text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight mb-5 leading-[1.05]">An agent that uses a phone like you do.</h2>
-        <p class="text-text-secondary text-base sm:text-lg leading-relaxed">PhysiClaw gives your agent a body — a hand and an eye. A gantry moves across the plane, a stylus taps the screen, and a camera watches what happens.</p>
+        <p class="font-mono text-xs tracking-[0.2em] uppercase text-accent mb-4">// <T en="How it works" zh="工作原理" /></p>
+        <h2 class="font-display text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight mb-5 leading-[1.05]">
+          <T en="An agent that uses a phone like you do." zh="它用手机的方式，和你别无二致。" />
+        </h2>
+        <p class="text-text-secondary text-base sm:text-lg leading-relaxed">
+          <T
+            en="PhysiClaw gives your agent a body — a hand and an eye. A gantry moves across the plane, a stylus taps the screen, and a camera watches what happens."
+            zh="PhysiClaw 给智能体一副身体——一只手，一只眼。机械臂平移，触控笔轻点，摄像头观察一切。"
+          />
+        </p>
       </div>
 
       <div class="grid sm:grid-cols-2 gap-5 sm:gap-6">
@@ -86,8 +123,8 @@ const solutions = [
               <svg class="w-[22px] h-[22px]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" set:html={step.icon} />
             </div>
             <div>
-              <h3 class="font-display font-bold text-lg sm:text-xl mb-2 tracking-tight">{step.title}</h3>
-              <p class="text-text-secondary text-sm sm:text-[15px] leading-relaxed">{step.body}</p>
+              <h3 class="font-display font-bold text-lg sm:text-xl mb-2 tracking-tight"><T en={step.title.en} zh={step.title.zh} /></h3>
+              <p class="text-text-secondary text-sm sm:text-[15px] leading-relaxed"><T en={step.body.en} zh={step.body.zh} /></p>
             </div>
           </div>
         ))}
@@ -102,26 +139,34 @@ const solutions = [
       <div class="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
         <!-- Argument -->
         <div class="reveal">
-          <p class="font-mono text-xs tracking-[0.2em] uppercase text-accent mb-4">// Why PhysiClaw</p>
-          <h2 class="font-display text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight mb-6 leading-[1.05]">An agent confined to a computer isn't enough.<br class="hidden sm:block" /> It needs a body.</h2>
+          <p class="font-mono text-xs tracking-[0.2em] uppercase text-accent mb-4">// <T en="Why PhysiClaw" zh="为什么是 PhysiClaw" /></p>
+          <h2 class="font-display text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight mb-6 leading-[1.05]">
+            <span class="lang-en">An agent confined to a computer isn't enough.<br class="hidden sm:block" /> It needs a body.</span><span class="lang-zh">困在电脑里，还不够。<br class="hidden sm:block" />它需要一副身体。</span>
+          </h2>
           <p class="text-text-secondary text-base sm:text-lg leading-relaxed mb-6">
-            The services you live in weren't built for your agent. WhatsApp, WeChat, Amazon, Taobao, Uber, Didi, Airbnb — their APIs are gated. An agent that can only call APIs is locked out of the apps that matter most.
+            <T
+              en="The services you live in weren't built for your agent. WhatsApp, WeChat, Amazon, Taobao, Uber, Didi, Airbnb — their APIs are gated. An agent that can only call APIs is locked out of the apps that matter most."
+              zh="你日日离不开的那些 App，从来不是为智能体打造的。微信、淘宝、京东、美团、滴滴、12306——道道门槛，重重设限。只会调接口的智能体，被挡在你最需要的 App 门外。"
+            />
           </p>
           <p class="text-text-secondary text-base sm:text-lg leading-relaxed">
-            A body changes that. Tapping the phone like you do, it gets in everywhere. To the phone, it's a finger on screen. The data wall can only be broken physically.
+            <T
+              en="A body changes that. Tapping the phone like you do, it gets in everywhere. To the phone, it's a finger on screen. The data wall can only be broken physically."
+              zh="有了身体，便全然不同。它像你一样轻点屏幕，处处畅通无阻。在手机眼中，它只是屏幕上的一根手指。数据的高墙，唯有以物理的方式打破。"
+            />
           </p>
         </div>
 
         <!-- The PhysiClaw way -->
         <div class="reveal card rounded-3xl p-8 sm:p-10" style="transition-delay: 100ms">
-          <h3 class="font-mono text-[11px] tracking-[0.2em] uppercase text-accent mb-8">The PhysiClaw way</h3>
+          <h3 class="font-mono text-[11px] tracking-[0.2em] uppercase text-accent mb-8"><T en="The PhysiClaw way" zh="PhysiClaw 之道" /></h3>
           <ul class="space-y-6">
             {solutions.map((s) => (
               <li class="flex items-start gap-4 text-[15px] sm:text-base text-text">
                 <span class="mt-px shrink-0 inline-flex items-center justify-center w-6 h-6 rounded-full bg-accent/10 text-accent ring-1 ring-accent/20">
                   <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
                 </span>
-                <span class="leading-snug">{s}</span>
+                <span class="leading-snug"><T en={s.en} zh={s.zh} /></span>
               </li>
             ))}
           </ul>
@@ -137,19 +182,22 @@ const solutions = [
         <div class="glow w-[420px] h-[420px] -top-32 left-1/2 -translate-x-1/2" aria-hidden="true"></div>
         <div class="relative">
           <h2 class="font-display text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight leading-[1.05] mb-4">
-            Build your own <span class="text-gradient">PhysiClaw</span> agent.
+            <span class="lang-en">Build your own <span class="text-gradient">PhysiClaw</span> agent.</span><span class="lang-zh">开始亲手打造你的 <span class="text-gradient">PhysiClaw</span> 智能体。</span>
           </h2>
           <p class="text-text-secondary text-base sm:text-lg max-w-xl mx-auto mb-9 leading-relaxed">
-            Both the hardware and the agent are open source. Buy the parts, assemble your own, and let your personal assistant work for you.
+            <T
+              en="Both the hardware and the agent are open source. Buy the parts, assemble your own, and let your personal assistant work for you."
+              zh="硬件与智能体，皆为开源。备齐零件，动手组装，让专属助手，为你效力。"
+            />
           </p>
           <div class="flex flex-wrap items-center justify-center gap-3">
             <a href="https://docs.physiclaw.ai" class="group inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-accent text-white font-medium text-sm hover:bg-accent-dim transition-all shadow-[0_14px_40px_-12px_var(--color-accent)] hover:shadow-[0_18px_50px_-12px_var(--color-accent)] hover:-translate-y-0.5">
-              Get started
+              <T en="Get started" zh="开始使用" />
               <svg class="w-4 h-4 transition-transform group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
             </a>
             <a href="https://github.com/physiclaw/PhysiClaw" target="_blank" rel="noopener" class="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-border bg-bg-elevated/40 text-text-secondary hover:text-text hover:border-accent/40 font-medium text-sm transition-all hover:-translate-y-0.5">
               <svg class="w-[18px] h-[18px]" fill="currentColor" viewBox="0 0 24 24"><path d={githubIconPath}/></svg>
-              Star on GitHub
+              <T en="Star on GitHub" zh="在 GitHub 上 Star 支持一下" />
             </a>
           </div>
         </div>

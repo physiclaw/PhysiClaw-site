@@ -39,6 +39,10 @@ const {
         if (localStorage.getItem('theme') === 'light') {
           document.documentElement.setAttribute('data-theme', 'light');
         }
+        // English-first: only switch to Chinese when the user has chosen it.
+        if (localStorage.getItem('lang') === 'zh') {
+          document.documentElement.setAttribute('data-lang', 'zh');
+        }
       })();
     </script>
   </head>
@@ -71,6 +75,19 @@ const {
           localStorage.setItem('theme', 'light');
         }
         updateToggleIcons();
+      });
+
+      // Language toggle (English / 中文) — both strings are in the DOM; CSS shows the active one
+      const langToggle = document.getElementById('lang-toggle');
+      langToggle?.addEventListener('click', () => {
+        const isZh = document.documentElement.getAttribute('data-lang') === 'zh';
+        if (isZh) {
+          document.documentElement.removeAttribute('data-lang');
+          localStorage.setItem('lang', 'en');
+        } else {
+          document.documentElement.setAttribute('data-lang', 'zh');
+          localStorage.setItem('lang', 'zh');
+        }
       });
 
       // Scroll-reveal — fade sections in as they enter the viewport

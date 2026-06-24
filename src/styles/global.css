@@ -107,7 +107,8 @@ body::before {
    Both strings render in the DOM; we show the active one via html[data-lang]. */
 .lang-zh { display: none; }
 html[data-lang="zh"] .lang-en { display: none; }
-html[data-lang="zh"] .lang-zh { display: inline; }
+/* revert → inline for <span>, block for <div>, so this works for inline text and block essays alike */
+html[data-lang="zh"] .lang-zh { display: revert; }
 
 /* The switch shows the language you'll switch TO (English ⇄ 简体中文) */
 .switch-to-en { display: none; }

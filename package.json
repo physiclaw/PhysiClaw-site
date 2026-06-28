@@ -7,6 +7,8 @@
   },
   "scripts": {
     "dev": "astro dev",
+    "fetch-installers": "node scripts/fetch-installers.mjs",
+    "prebuild": "node scripts/fetch-installers.mjs",
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro"

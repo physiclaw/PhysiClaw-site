@@ -4,3 +4,7 @@ dist
 .astro
 .DS_Store
 .vscode
+
+# Installers fetched from the PhysiClaw repo at build time (see scripts/fetch-installers.mjs)
+public/install.sh
+public/install.ps1

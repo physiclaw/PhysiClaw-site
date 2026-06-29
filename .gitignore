@@ -9,3 +9,6 @@ dist
 # The source of truth is /install, synced from the PhysiClaw repo by a GitHub Action.
 public/install.sh
 public/install.ps1
+
+# Firmware fetched from the PhysiClaw GitHub release at build time (see scripts/fetch-firmware.mjs)
+public/downloads/

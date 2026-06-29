@@ -46,6 +46,7 @@ src/
 public/                    # SVG mascot, illustrations, favicons
 install/                   # install.sh + install.ps1, synced from the PhysiClaw repo (see below)
 scripts/stage-installers.mjs  # prebuild step: copies install/ → public/
+scripts/fetch-firmware.mjs    # prebuild step: fetches firmware from the PhysiClaw release → public/downloads/
 astro.config.mjs           # Tailwind (Vite plugin) + Vercel adapter
 ```
 
@@ -67,6 +68,14 @@ A GitHub Action there syncs them into this repo's `install/` directory on every 
 At build time, the `prebuild` step (`scripts/stage-installers.mjs`) copies `install/` into
 `public/`, so they're served from the site root. The staged `public/install.*` copies are
 build artifacts and are gitignored — edit the scripts in the PhysiClaw repo, never here.
+
+## Firmware download
+
+The FluidNC firmware bundle is served at `physiclaw.ai/downloads/firmware/fluidnc_4_0_3.zip`.
+At build time, the `prebuild` step (`scripts/fetch-firmware.mjs`) fetches it from the
+[`firmware_fluidNC` release](https://github.com/physiclaw/PhysiClaw/releases/tag/firmware_fluidNC)
+of the PhysiClaw repo into `public/downloads/`. The fetched file is a build artifact and is
+gitignored — to publish a new build, update the GitHub release.
 
 ## Deployment
 

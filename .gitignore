@@ -5,6 +5,7 @@ dist
 .DS_Store
 .vscode
 
-# Installers fetched from the PhysiClaw repo at build time (see scripts/fetch-installers.mjs)
+# Installers staged from /install into public/ at build time (see scripts/stage-installers.mjs).
+# The source of truth is /install, synced from the PhysiClaw repo by a GitHub Action.
 public/install.sh
 public/install.ps1

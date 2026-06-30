@@ -6,7 +6,7 @@ gives AI agents a physical body to operate any phone.
 **Live:** [physiclaw.ai](https://physiclaw.ai)
 
 Built with [Astro](https://astro.build) + [Tailwind CSS](https://tailwindcss.com), deployed on
-[Vercel](https://vercel.com).
+[Cloudflare Pages](https://pages.cloudflare.com) and [Vercel](https://vercel.com).
 
 ## Related repos
 
@@ -47,7 +47,7 @@ public/                    # SVG mascot, illustrations, favicons
 install/                   # install.sh + install.ps1, synced from the PhysiClaw repo (see below)
 scripts/stage-installers.mjs  # prebuild step: copies install/ → public/
 scripts/fetch-downloads.mjs   # prebuild step: fetches release assets from PhysiClaw → public/downloads/
-astro.config.mjs           # Tailwind (Vite plugin) + Vercel adapter
+astro.config.mjs           # Tailwind (Vite plugin) + Vercel adapter (also emits dist/ for Cloudflare Pages)
 ```
 
 ## Install scripts
@@ -77,15 +77,27 @@ under `physiclaw.ai/downloads/`:
 | Path | Source release |
 | ---- | -------------- |
 | `/downloads/firmware/fluidnc_4_0_3.zip` | [`firmware_fluidNC`](https://github.com/physiclaw/PhysiClaw/releases/tag/firmware_fluidNC) — FluidNC firmware bundle |
-| `/downloads/local_vision_model.zip` | [`local-vision-model`](https://github.com/physiclaw/PhysiClaw/releases/tag/local-vision-model) — OmniParser icon detector (ONNX) |
+| `/downloads/local_vision_model.zip.b64.00`–`.03` | [`local-vision-model`](https://github.com/physiclaw/PhysiClaw/releases/tag/local-vision-model) — OmniParser icon detector (ONNX) |
 
 At build time, the `prebuild` step (`scripts/fetch-downloads.mjs`) fetches these into
 `public/downloads/`. The fetched files are build artifacts and are gitignored — to publish a
 new build, update the corresponding GitHub release.
 
+The vision model is 64 MiB, over Cloudflare Pages' 25 MiB per-file limit, so it's base64-encoded
+and split into four ~21 MiB parts. To reassemble:
+
+```sh
+cat local_vision_model.zip.b64.* | base64 -d > local_vision_model.zip
+```
+
 ## Deployment
 
-Pushes to `main` deploy automatically to **Vercel** (`@astrojs/vercel` adapter) at `physiclaw.ai`.
+Pushes to `main` deploy automatically. The build runs on both hosts:
+
+- **Cloudflare Pages** — serves the static `dist/` output (build output directory: `dist`).
+- **Vercel** — uses the `@astrojs/vercel` adapter output (`.vercel/output`).
+
+`physiclaw.ai` points at whichever host is primary; both build from the same `astro build`.
 
 ## License
 

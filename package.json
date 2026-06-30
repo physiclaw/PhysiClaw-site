@@ -8,8 +8,8 @@
   "scripts": {
     "dev": "astro dev",
     "stage-installers": "node scripts/stage-installers.mjs",
-    "fetch-firmware": "node scripts/fetch-firmware.mjs",
-    "prebuild": "node scripts/stage-installers.mjs && node scripts/fetch-firmware.mjs",
+    "fetch-downloads": "node scripts/fetch-downloads.mjs",
+    "prebuild": "node scripts/stage-installers.mjs && node scripts/fetch-downloads.mjs",
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro"

@@ -10,5 +10,5 @@ dist
 public/install.sh
 public/install.ps1
 
-# Firmware fetched from the PhysiClaw GitHub release at build time (see scripts/fetch-firmware.mjs)
+# Release assets fetched from the PhysiClaw repo at build time (see scripts/fetch-downloads.mjs)
 public/downloads/

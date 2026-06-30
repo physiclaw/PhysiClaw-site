@@ -46,7 +46,7 @@ src/
 public/                    # SVG mascot, illustrations, favicons
 install/                   # install.sh + install.ps1, synced from the PhysiClaw repo (see below)
 scripts/stage-installers.mjs  # prebuild step: copies install/ → public/
-scripts/fetch-firmware.mjs    # prebuild step: fetches firmware from the PhysiClaw release → public/downloads/
+scripts/fetch-downloads.mjs   # prebuild step: fetches release assets from PhysiClaw → public/downloads/
 astro.config.mjs           # Tailwind (Vite plugin) + Vercel adapter
 ```
 
@@ -69,13 +69,19 @@ At build time, the `prebuild` step (`scripts/stage-installers.mjs`) copies `inst
 `public/`, so they're served from the site root. The staged `public/install.*` copies are
 build artifacts and are gitignored — edit the scripts in the PhysiClaw repo, never here.
 
-## Firmware download
+## Downloads
 
-The FluidNC firmware bundle is served at `physiclaw.ai/downloads/firmware/fluidnc_4_0_3.zip`.
-At build time, the `prebuild` step (`scripts/fetch-firmware.mjs`) fetches it from the
-[`firmware_fluidNC` release](https://github.com/physiclaw/PhysiClaw/releases/tag/firmware_fluidNC)
-of the PhysiClaw repo into `public/downloads/`. The fetched file is a build artifact and is
-gitignored — to publish a new build, update the GitHub release.
+Release assets from the [PhysiClaw repo](https://github.com/physiclaw/PhysiClaw) are served
+under `physiclaw.ai/downloads/`:
+
+| Path | Source release |
+| ---- | -------------- |
+| `/downloads/firmware/fluidnc_4_0_3.zip` | [`firmware_fluidNC`](https://github.com/physiclaw/PhysiClaw/releases/tag/firmware_fluidNC) — FluidNC firmware bundle |
+| `/downloads/local_vision_model.zip` | [`local-vision-model`](https://github.com/physiclaw/PhysiClaw/releases/tag/local-vision-model) — OmniParser icon detector (ONNX) |
+
+At build time, the `prebuild` step (`scripts/fetch-downloads.mjs`) fetches these into
+`public/downloads/`. The fetched files are build artifacts and are gitignored — to publish a
+new build, update the corresponding GitHub release.
 
 ## Deployment
 

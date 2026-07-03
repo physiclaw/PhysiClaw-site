@@ -77,6 +77,16 @@ const {
         updateToggleIcons();
       });
 
+      // Keep Docs links in the current language: en → /en/, zh → /zh/.
+      // (The docs site is per-locale; root just redirects to /en/.)
+      function updateDocsLinks() {
+        const lang = document.documentElement.getAttribute('data-lang') === 'zh' ? 'zh' : 'en';
+        document.querySelectorAll('[data-docs-link]').forEach((a) => {
+          a.setAttribute('href', `https://docs.physiclaw.ai/${lang}/`);
+        });
+      }
+      updateDocsLinks();
+
       // Language toggle (English / 中文) — both strings are in the DOM; CSS shows the active one
       const langToggle = document.getElementById('lang-toggle');
       langToggle?.addEventListener('click', () => {
@@ -88,6 +98,7 @@ const {
           document.documentElement.setAttribute('data-lang', 'zh');
           localStorage.setItem('lang', 'zh');
         }
+        updateDocsLinks();
       });
 
       // Scroll-reveal — fade sections in as they enter the viewport

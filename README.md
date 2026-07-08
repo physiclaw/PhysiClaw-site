@@ -45,8 +45,11 @@ src/
 └── styles/global.css      # Tailwind import + @theme design tokens (dark + light)
 public/                    # SVG mascot, illustrations, favicons
 install/                   # install.sh + install.ps1, synced from the PhysiClaw repo (see below)
-scripts/stage-installers.mjs  # prebuild step: copies install/ → public/
-scripts/fetch-downloads.mjs   # prebuild step: fetches release assets from PhysiClaw → public/downloads/
+skills/                    # official skill tree, synced from the PhysiClaw repo (see below)
+skills-source.json         # provenance for skills/ (commit, builtAt), written by the sync Action
+scripts/stage-installers.mjs      # prebuild step: copies install/ → public/
+scripts/fetch-downloads.mjs       # prebuild step: fetches release assets from PhysiClaw → public/downloads/
+scripts/build-official-skills.mjs # prebuild step: packs skills/ → public/downloads/ zip + version endpoint
 astro.config.mjs           # Tailwind (Vite plugin) + Vercel adapter (also emits dist/ for Cloudflare Pages)
 ```
 
@@ -89,6 +92,51 @@ and split into four ~21 MiB parts. To reassemble:
 ```sh
 cat local_vision_model.zip.b64.* | base64 -d > local_vision_model.zip
 ```
+
+## Official skills
+
+The `physiclaw skills sync official` command downloads a zip of the official skills and
+extracts it into `~/.physiclaw/official/`. This site builds and serves that package.
+
+**Passive sync.** The skills' single source of truth is the PhysiClaw repo's `skills/`
+directory. A GitHub Action there pushes the tree — plus a `skills-source.json` provenance
+file (`{ repo, subdir, commit, builtAt }`) — into this repo. Both are Action-owned; don't hand-edit them.
+
+**Build.** At build time, `scripts/build-official-skills.mjs` (a `prebuild` step) packages
+`skills/` and emits three artifacts (all gitignored; regenerated each build):
+
+All three share one namespace, `/downloads/official-skills/`:
+
+| Path | What |
+| ---- | ---- |
+| `/downloads/official-skills/physiclaw_official_skills.zip` | `source.json` + the `skills/` tree, in the layout the client extracts verbatim |
+| `/downloads/official-skills/physiclaw_official_skills.zip.sha256` | integrity checksum (`sha256sum` format) |
+| `/downloads/official-skills/latest.json` | freshness signal (`application/json`) — `{ schemaVersion, commit, builtAt, skillCount }` |
+
+The shipped `source.json` (inside the zip, alongside `skills/`) is **generated**, not
+hand-authored — its `skills[]` manifest is derived from the files, so it can't drift:
+
+| Field | Source | Meaning |
+| ----- | ------ | ------- |
+| `schemaVersion` | constant | Integer; bump on a breaking shape change. |
+| `package` | constant | Package id (`physiclaw-official-skills`). |
+| `commit` | provenance | Full PhysiClaw git SHA the tree was synced from — the **version identity & freshness key**. |
+| `repo` / `subdir` | provenance | Where the tree was packed from (e.g. `physiclaw/PhysiClaw` · `skills`); falls back to constants if absent. |
+| `builtAt` | provenance | ISO-8601 time (that commit's timestamp, in UTC). |
+| `skills[]` | derived | One `{ name, path, description, hash }` per `skills/<name>/SKILL.md` — `name`/`description` from frontmatter, `path` zip-relative, `hash` = `sha256:` content digest of the skill directory. |
+
+Each skill's `hash` is a **change-detection id** — a client compares it to what it has installed
+to tell which skills changed between syncs and skip re-applying the rest. It is **not** package
+integrity: a hash shipped inside the zip can't prove the zip wasn't tampered, so integrity stays
+in the sibling `.sha256` computed over the downloaded zip bytes.
+
+A client checks `/downloads/official-skills/latest.json` and only re-downloads when its stored
+`commit` differs. If the Action hasn't synced `skills/` yet — or synced it without a `commit` in
+`skills-source.json` (an incomplete sync) — the build skips this step cleanly and publishes no
+package, rather than shipping one it can't version.
+
+> **Publish note:** the version signal and the zip travel the same channel, so the checksum
+> guards against corruption, not a coordinated MITM. Real tamper-proofing would need a signature.
 
 ## Deployment
 

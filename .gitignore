@@ -10,5 +10,7 @@ dist
 public/install.sh
 public/install.ps1
 
-# Release assets fetched from the PhysiClaw repo at build time (see scripts/fetch-downloads.mjs)
+# Build artifacts written into public/downloads/ at build time:
+#  - release assets fetched from the PhysiClaw repo (scripts/fetch-downloads.mjs)
+#  - the official-skills zip + checksum + latest.json (scripts/build-official-skills.mjs)
 public/downloads/

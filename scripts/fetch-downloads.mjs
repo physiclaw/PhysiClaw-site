@@ -1,6 +1,6 @@
 // Fetches release assets from the PhysiClaw repo and writes them into public/
 // so they're served from physiclaw.ai/downloads/:
-//   /downloads/firmware/fluidnc_4_0_3.zip       — FluidNC firmware bundle
+//   /downloads/firmware/fluidnc.zip              — FluidNC firmware bundle
 //   /downloads/local_vision_model.zip.b64.00..03 — OmniParser icon detector (ONNX)
 // Runs automatically before `pnpm build` via the "prebuild" npm script.
 //
@@ -19,8 +19,11 @@ const RELEASES = 'https://github.com/physiclaw/PhysiClaw/releases/download';
 //         (Cloudflare Pages' 25 MiB/file limit); otherwise write dest verbatim.
 const DOWNLOADS = [
   {
-    src: `${RELEASES}/firmware_fluidNC/fluidnc_4_0_3.zip`,
-    dest: 'downloads/firmware/fluidnc_4_0_3.zip',
+    // Version-free end to end: the zip's fluidnc_version.txt records the
+    // FluidNC version (bundle built by PhysiClaw scripts/firmware/). A new
+    // firmware release is upload --clobber + redeploy — no name changes.
+    src: `${RELEASES}/firmware_fluidNC/fluidnc.zip`,
+    dest: 'downloads/firmware/fluidnc.zip',
   },
   {
     src: `${RELEASES}/local-vision-model/local_vision_model.zip`,

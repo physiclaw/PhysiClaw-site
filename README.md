@@ -79,7 +79,7 @@ under `physiclaw.ai/downloads/`:
 
 | Path | Source release |
 | ---- | -------------- |
-| `/downloads/firmware/fluidnc_4_0_3.zip` | [`firmware_fluidNC`](https://github.com/physiclaw/PhysiClaw/releases/tag/firmware_fluidNC) — FluidNC firmware bundle |
+| `/downloads/firmware/fluidnc.zip` | [`firmware_fluidNC`](https://github.com/physiclaw/PhysiClaw/releases/tag/firmware_fluidNC) — FluidNC firmware bundle (version-free name; the bundled `fluidnc_version.txt` records the FluidNC version) |
 | `/downloads/local_vision_model.zip.b64.00`–`.03` | [`local-vision-model`](https://github.com/physiclaw/PhysiClaw/releases/tag/local-vision-model) — OmniParser icon detector (ONNX) |
 
 At build time, the `prebuild` step (`scripts/fetch-downloads.mjs`) fetches these into

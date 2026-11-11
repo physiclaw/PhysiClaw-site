@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import ThemeProvider from '../components/ThemeProvider.astro';
 
 interface Props {
   title?: string;
@@ -30,18 +31,19 @@ const {
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
     <title>{title}</title>
-    <!-- Prevent flash of wrong theme -->
+    <ThemeProvider />
+    <!-- Restore language before paint and enable scroll-reveal. -->
     <script is:inline>
       (function() {
         // Mark JS as available so scroll-reveal can hide content before revealing it.
         document.documentElement.classList.add('js');
-        // Dark-first: only switch to light when the user has explicitly chosen it.
-        if (localStorage.getItem('theme') === 'light') {
-          document.documentElement.setAttribute('data-theme', 'light');
-        }
         // English-first: only switch to Chinese when the user has chosen it.
-        if (localStorage.getItem('lang') === 'zh') {
-          document.documentElement.setAttribute('data-lang', 'zh');
+        try {
+          if (localStorage.getItem('lang') === 'zh') {
+            document.documentElement.dataset.lang = 'zh';
+          }
+        } catch {
+          // Use the default language when preferences are unavailable.
         }
       })();
     </script>
@@ -49,33 +51,6 @@ const {
   <body class="bg-bg text-text font-sans">
     <slot />
     <script>
-
-      // Theme toggle
-      const toggle = document.getElementById('theme-toggle');
-      const sunIcon = document.getElementById('sun-icon');
-      const moonIcon = document.getElementById('moon-icon');
-
-      function updateToggleIcons() {
-        const isLight = document.documentElement.getAttribute('data-theme') === 'light';
-        if (sunIcon && moonIcon) {
-          sunIcon.classList.toggle('hidden', !isLight);
-          moonIcon.classList.toggle('hidden', isLight);
-        }
-      }
-
-      updateToggleIcons();
-
-      toggle?.addEventListener('click', () => {
-        const isCurrentlyLight = document.documentElement.getAttribute('data-theme') === 'light';
-        if (isCurrentlyLight) {
-          document.documentElement.removeAttribute('data-theme');
-          localStorage.setItem('theme', 'dark');
-        } else {
-          document.documentElement.setAttribute('data-theme', 'light');
-          localStorage.setItem('theme', 'light');
-        }
-        updateToggleIcons();
-      });
 
       // Keep Docs links in the current language: en → /en/, zh → /zh/.
       // (The docs site is per-locale; root just redirects to /en/.)

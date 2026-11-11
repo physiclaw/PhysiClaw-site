@@ -59,6 +59,12 @@ html {
   -webkit-text-size-adjust: 100%; /* stop mobile Safari/Chrome auto-inflating text */
 }
 
+/* Show the active theme's icon, matching docs-site. */
+html:not([data-theme="light"]) #sun-icon,
+html[data-theme="light"] #moon-icon {
+  display: none;
+}
+
 body {
   font-feature-settings: "cv11", "ss01";
   position: relative;
